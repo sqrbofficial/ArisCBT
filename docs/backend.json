@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Aris AI Therapy application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "country": {
+          "type": "string",
+          "description": "The user's country."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The timestamp when the user was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "country",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user information, including country and creation timestamp.  Enforces path-based ownership for private user data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user, derived from their Firebase Auth UID."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to securely store user data, including their country, and to support the Aris AI Therapy application's core features. User data is stored under `/users/{userId}`. This approach ensures path-based ownership, granting each user control over their own data. This structure supports authorization independence because access control is determined solely by the user's `uid` in the path, eliminating the need for `get()` calls in security rules. Additionally, the homogeneous structure of the `users` collection simplifies security rule design and facilitates secure `list` operations, fulfilling the QAPs requirement. No membership maps are used because the data is exclusively private to each user. The `createdAt` timestamp is included for auditability and data management."
+  }
+}

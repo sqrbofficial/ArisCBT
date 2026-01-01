@@ -1,0 +1,108 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model where all
+ * data is partitioned by user ID. Each user has exclusive control over their own
+ * data, and there is no concept of shared or public data.
+ *
+ * Data Structure: The data is organized under a single top-level 'users'
+ * collection. Each user's data is stored in a document where the document ID
+ * matches their Firebase Authentication UID (e.g., /users/{userId}).
+ *
+ * Key Security Decisions:
+ * - User Isolation: Users can only read, write, and delete their own data.
+ *   Access to other users' data is strictly prohibited.
+ * - No User Listing: It is impossible to query the list of all users in the
+ *   application, protecting user privacy.
+ * - Path-Based Security: Authorization decisions are made using the `userId` in
+ *   the document path, which is fast, secure, and avoids costly database lookups
+ *   in rules.
+ * - Secure Creation: A user can only create their own user document, and the
+ *   internal `id` field must match their authentication UID, ensuring data
+ *   integrity from the start.
+ *
+ * Denormalization for Authorization: This model is designed to avoid complex
+ * `get()` calls. The user's UID in the document path (`/users/{userId}`) serves
+ * as the sole piece of information required for authorization, making the rules
+ * both performant and easy to understand.
+ *
+ * Structural Segregation: Not applicable in this model, as all data is private
+ * and follows the same structure. There are no public or shared collections.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently signed-in user's UID matches the provided userId.
+     * This is the foundation of the user-ownership model.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    /**
+     * Checks for ownership on an existing document. Used for safe updates and deletes.
+     * Denies requests that target non-existent documents, preventing failed writes.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * Validates required relational fields on user document creation.
+     * Ensures the internal 'id' field matches the document's ID (and thus the user's UID).
+     * Prototyping Mode: Does not validate other data fields like 'country' or 'createdAt'.
+     */
+    function isCreatingValidUserDocument(userId) {
+      let incomingData = request.resource.data;
+      return incomingData.id == userId;
+    }
+
+    /**
+     * Validates required relational fields on user document update.
+     * Enforces the immutability of the internal 'id' field to prevent ownership changes.
+     * Prototyping Mode: Allows all other fields to be modified freely.
+     */
+    function isUpdatingValidUserDocument() {
+      let incomingData = request.resource.data;
+      let existingData = resource.data;
+      return incomingData.id == existingData.id;
+    }
+
+    // ----------------------------------------------------------------------
+    // Collection Rules
+    // ----------------------------------------------------------------------
+
+    /**
+     * @description Secures a user's private data document. Only the owner can
+     *   access or modify their own document.
+     * @path /users/{userId}
+     * @allow (get) A signed-in user (auth.uid='user123') reads their own document at
+     *   /users/user123.
+     * @deny (get) A signed-in user (auth.uid='user123') tries to read another
+     *   user's document at /users/user456.
+     * @principle Restricts access to a user's own data tree, ensuring privacy
+     *   and data isolation between users.
+     */
+    match /users/{userId} {
+      // READ: Only the document owner can read their own user data.
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+
+      // WRITE: A user can create their own document, update it, and delete it.
+      allow create: if isOwner(userId) && isCreatingValidUserDocument(userId);
+      allow update: if isExistingOwner(userId) && isUpdatingValidUserDocument();
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}
