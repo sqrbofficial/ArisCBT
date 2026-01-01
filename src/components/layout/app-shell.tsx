@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookHeart, Bot, MessageSquareText, Menu, Settings } from "lucide-react";
+import { BarChart3, BookHeart, Bot, MessageSquareText, Menu, Settings, Siren } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +40,12 @@ const menuItems = [
     label: "Settings",
   },
 ];
+
+const crisisItem = {
+    href: "/crisis",
+    icon: Siren,
+    label: "Crisis",
+};
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -78,6 +84,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
+            <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === crisisItem.href}
+                  className={cn(
+                    "justify-start text-destructive hover:bg-destructive/10 hover:text-destructive font-bold",
+                    pathname === crisisItem.href && "bg-destructive/20"
+                  )}
+                  tooltip={crisisItem.label}
+                >
+                  <Link href={crisisItem.href}>
+                    <crisisItem.icon />
+                    <span>{crisisItem.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
@@ -97,8 +119,8 @@ function AppShellHeader() {
     // No header on the main chat page for a cleaner look
     return null;
   }
-
-  const currentItem = menuItems.find(item => item.href === pathname);
+  const allItems = [...menuItems, crisisItem];
+  const currentItem = allItems.find(item => item.href === pathname);
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
@@ -110,7 +132,7 @@ function AppShellHeader() {
       <div className="flex items-center gap-2 font-bold">
         {currentItem && (
           <>
-            <currentItem.icon className="h-5 w-5 text-primary"/>
+            <currentItem.icon className={cn("h-5 w-5", currentItem.href === "/crisis" ? "text-destructive" : "text-primary")}/>
             <span className="font-headline">{currentItem.label}</span>
           </>
         )}
