@@ -32,7 +32,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       <Avatar className="h-8 w-8">
         <AvatarImage
           src={isAi ? arisAvatar?.imageUrl : userAvatar?.imageUrl}
-          alt={isAi ? "Dr. Aris" : "User"}
+          alt={isAi ? "ArisCBT" : "User"}
         />
         <AvatarFallback>
           {isAi ? <Bot /> : <User />}

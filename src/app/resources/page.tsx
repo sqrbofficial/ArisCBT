@@ -59,7 +59,7 @@ export default function ResourcesPage() {
         <h1 className="font-headline text-2xl font-bold">Helpful Resources</h1>
       </div>
       <p className="text-muted-foreground">
-        While Dr. Aris can be a helpful guide, these resources can provide
+        While ArisCBT can be a helpful guide, these resources can provide
         additional support. If you are in crisis, please contact a hotline or
         emergency services immediately.
       </p>

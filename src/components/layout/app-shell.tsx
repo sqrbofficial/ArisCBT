@@ -51,8 +51,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <Link href="/">
               <Bot className="text-primary" />
               <div className="flex flex-col items-start">
-                <span className="font-headline text-lg font-bold">Aris</span>
-                <span className="text-xs text-muted-foreground">AI Therapy</span>
+                <span className="font-headline text-lg font-bold">ArisCBT</span>
+                <span className="text-xs text-muted-foreground">CBT Companion</span>
               </div>
             </Link>
           </Button>
@@ -85,7 +85,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <SidebarTrigger />
           <div className="flex items-center gap-2 font-bold">
             <Bot size={24} className="text-primary"/>
-            <span className="font-headline">Aris AI Therapy</span>
+            <span className="font-headline">ArisCBT</span>
           </div>
         </header>
         {children}

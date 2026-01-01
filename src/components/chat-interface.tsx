@@ -27,7 +27,7 @@ const initialMessages: Message[] = [
   {
     id: "0",
     role: "ai",
-    text: "Hello, I'm Dr. Aris. I'm here to provide a safe space for you to explore your thoughts and feelings. What's on your mind today?",
+    text: "Hello, I'm ArisCBT. I'm here to provide a safe space for you to explore your thoughts and feelings. What's on your mind today?",
   },
 ];
 
@@ -124,7 +124,7 @@ export default function ChatInterface() {
         <div className="flex items-center gap-2">
           <Bot size={32} className="text-primary" />
           <div>
-            <h1 className="font-headline text-xl font-bold">Dr. Aris</h1>
+            <h1 className="font-headline text-xl font-bold">ArisCBT</h1>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-green-500"></div>
               <p className="text-xs text-muted-foreground">Online</p>

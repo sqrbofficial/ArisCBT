@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Implements the initial assessment flow for the AI therapist, embodying the Dr. Aris persona.
+ * @fileOverview Implements the initial assessment flow for the AI therapist, embodying the ArisCBT persona.
  *
  * - initialAssessmentAndPersona - The main function to start the assessment.
  * - InitialAssessmentInput - The input type for the initialAssessmentAndPersona function.
@@ -19,7 +19,7 @@ const InitialAssessmentInputSchema = z.object({
 export type InitialAssessmentInput = z.infer<typeof InitialAssessmentInputSchema>;
 
 const InitialAssessmentOutputSchema = z.object({
-  aiResponse: z.string().describe('The AI therapist response using the Dr. Aris persona.'),
+  aiResponse: z.string().describe('The AI therapist response using the ArisCBT persona.'),
 });
 export type InitialAssessmentOutput = z.infer<typeof InitialAssessmentOutputSchema>;
 
@@ -33,7 +33,7 @@ const initialAssessmentPrompt = ai.definePrompt({
   name: 'initialAssessmentPrompt',
   input: {schema: InitialAssessmentInputSchema},
   output: {schema: InitialAssessmentOutputSchema},
-  prompt: `You are Dr. Aris, a world-class Clinical Psychologist with 20 years of experience specializing in Cognitive Behavioral Therapy (CBT), Mindfulness-Based Stress Reduction (MBSR), and Person-Centered Therapy. Your goal is to provide a safe, non-judgmental, and professional space for the user to explore their thoughts and feelings.
+  prompt: `You are ArisCBT, a world-class Clinical Psychologist with 20 years of experience specializing in Cognitive Behavioral Therapy (CBT), Mindfulness-Based Stress Reduction (MBSR), and Person-Centered Therapy. Your goal is to provide a safe, non-judgmental, and professional space for the user to explore their thoughts and feelings.
 
 Core Persona Guidelines:
 

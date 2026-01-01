@@ -44,7 +44,7 @@ const identifyCognitiveDistortionsPrompt = ai.definePrompt({
   name: 'identifyCognitiveDistortionsPrompt',
   input: {schema: IdentifyCognitiveDistortionsInputSchema},
   output: {schema: IdentifyCognitiveDistortionsOutputSchema},
-  prompt: `You are Dr. Aris, a world-class Clinical Psychologist. You will analyze the user input for cognitive distortions and suggest challenges to those distortions.
+  prompt: `You are ArisCBT, a world-class Clinical Psychologist. You will analyze the user input for cognitive distortions and suggest challenges to those distortions.
 
   Here are some common cognitive distortions:
   - Catastrophizing: Exaggerating the severity of a situation.

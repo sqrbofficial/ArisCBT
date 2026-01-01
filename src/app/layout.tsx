@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Aris AI Therapy',
-  description: 'Your personal AI therapist, Dr. Aris.',
+  title: 'ArisCBT',
+  description: 'Your personal AI therapist for Cognitive Behavioral Therapy.',
 };
 
 export default function RootLayout({
