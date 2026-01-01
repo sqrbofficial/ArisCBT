@@ -26,7 +26,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
     <div
       className={cn(
         "flex items-start gap-3",
-        !isAi && "flex-row-reverse"
+        !isAi ? "flex-row-reverse" : "justify-start"
       )}
     >
       <Avatar className="h-8 w-8">
@@ -41,9 +41,9 @@ export default function ChatMessage({ message }: ChatMessageProps) {
 
       <div
         className={cn(
-          "max-w-md rounded-xl px-4 py-3",
+          "max-w-md rounded-2xl px-4 py-3 shadow-md",
           isAi
-            ? "rounded-bl-none bg-card"
+            ? "rounded-bl-none bg-card text-card-foreground"
             : "rounded-br-none bg-primary text-primary-foreground"
         )}
       >

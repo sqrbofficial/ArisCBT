@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SendHorizonal, Bot } from "lucide-react";
+import { SendHorizonal, Bot, Menu } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,6 +15,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import type { CrisisInfo, Message } from "@/lib/types";
 import { Card, CardContent } from "./ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import Link from "next/link";
+import { BarChart3, BookHeart, MessageSquareText } from "lucide-react";
 
 const formSchema = z.object({
   message: z.string().min(1, { message: "Message cannot be empty." }),
@@ -27,6 +30,25 @@ const initialMessages: Message[] = [
     text: "Hello, I'm Dr. Aris. I'm here to provide a safe space for you to explore your thoughts and feelings. What's on your mind today?",
   },
 ];
+
+const menuItems = [
+  {
+    href: "/",
+    icon: MessageSquareText,
+    label: "Chat",
+  },
+  {
+    href: "/progress",
+    icon: BarChart3,
+    label: "Progress",
+  },
+  {
+    href: "/resources",
+    icon: BookHeart,
+    label: "Resources",
+  },
+];
+
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -97,14 +119,42 @@ export default function ChatInterface() {
   };
   
   return (
-    <div className="flex h-full max-h-[calc(100vh-2rem)] flex-col">
-      <div className="hidden items-center gap-4 p-4 md:flex">
-        <Bot size={32} className="text-primary" />
-        <div>
-          <h1 className="font-headline text-2xl font-bold">Chat with Dr. Aris</h1>
-          <p className="text-muted-foreground">This is a safe space to explore your thoughts.</p>
+    <div className="flex h-full max-h-dvh flex-col">
+      <header className="flex items-center justify-between gap-4 p-4">
+        <div className="flex items-center gap-2">
+          <Bot size={32} className="text-primary" />
+          <div>
+            <h1 className="font-headline text-xl font-bold">Dr. Aris</h1>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-green-500"></div>
+              <p className="text-xs text-muted-foreground">Online</p>
+            </div>
+          </div>
         </div>
-      </div>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <div className="p-4">
+              <nav className="flex flex-col gap-4">
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center gap-2 rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </header>
 
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
@@ -118,8 +168,8 @@ export default function ChatInterface() {
         </ScrollArea>
       </div>
 
-      <div className="p-4">
-        <Card className="rounded-xl">
+      <div className="border-t p-4">
+        <Card className="rounded-xl shadow-lg">
           <CardContent className="p-2">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-2">
@@ -147,7 +197,7 @@ export default function ChatInterface() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" size="icon" disabled={isPending}>
+                <Button type="submit" size="icon" disabled={isPending} className="rounded-full">
                   <SendHorizonal />
                   <span className="sr-only">Send</span>
                 </Button>

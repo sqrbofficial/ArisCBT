@@ -39,6 +39,10 @@ const menuItems = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  if (pathname === "/") {
+    return <main className="h-dvh">{children}</main>;
+  }
+  
   return (
     <SidebarProvider>
       <Sidebar>
