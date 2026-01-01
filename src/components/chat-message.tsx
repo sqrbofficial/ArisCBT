@@ -49,9 +49,9 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       >
         {message.isTyping ? (
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-muted-foreground/50 [animation-delay:-0.3s]"></span>
-            <span className="h-2 w-2 animate-pulse rounded-full bg-muted-foreground/50 [animation-delay:-0.15s]"></span>
-            <span className="h-2 w-2 animate-pulse rounded-full bg-muted-foreground/50"></span>
+            <span className="h-2 w-2 animate-pulse rounded-full bg-background [animation-delay:-0.3s]"></span>
+            <span className="h-2 w-2 animate-pulse rounded-full bg-background [animation-delay:-0.15s]"></span>
+            <span className="h-2 w-2 animate-pulse rounded-full bg-background"></span>
           </div>
         ) : (
           <p className="whitespace-pre-wrap text-sm">{message.text}</p>
