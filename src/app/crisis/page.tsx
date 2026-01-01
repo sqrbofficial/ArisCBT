@@ -28,14 +28,6 @@ const resources = [
     info: "24/7 Confidential Support",
   },
   {
-    title: "The Trevor Project",
-    icon: Phone,
-    details: "Call 1-866-488-7386",
-    action: "Call",
-    href: "tel:1-866-488-7386",
-    info: "For LGBTQ Youth",
-  },
-  {
     title: "International Crisis Directory",
     icon: Search,
     details: "Find a local crisis center anywhere in the world.",

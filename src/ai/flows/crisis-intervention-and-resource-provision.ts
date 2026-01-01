@@ -39,7 +39,6 @@ const prompt = ai.definePrompt({
   If isCrisis is true, include the following resources in crisisMessage:
   - National Suicide Prevention Lifeline: 988
   - Crisis Text Line: Text HOME to 741741
-  - The Trevor Project: 1-866-488-7386 (for LGBTQ youth)
 
   Also, strongly encourage the user to seek professional in-person help.
   `,
