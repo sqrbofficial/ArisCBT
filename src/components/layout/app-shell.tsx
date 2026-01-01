@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookHeart, Bot, MessageSquareText, Menu } from "lucide-react";
+import { BarChart3, BookHeart, Bot, MessageSquareText, Menu, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +13,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "../ui/button";
@@ -34,6 +33,11 @@ const menuItems = [
     href: "/resources",
     icon: BookHeart,
     label: "Resources",
+  },
+  {
+    href: "/settings",
+    icon: Settings,
+    label: "Settings",
   },
 ];
 
