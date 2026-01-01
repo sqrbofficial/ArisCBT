@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookHeart, Bot, MessageSquareText } from "lucide-react";
+import { BarChart3, BookHeart, Bot, MessageSquareText, Menu } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +14,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
@@ -39,10 +40,6 @@ const menuItems = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  if (pathname === "/") {
-    return <main className="h-dvh">{children}</main>;
-  }
-  
   return (
     <SidebarProvider>
       <Sidebar>
@@ -81,15 +78,39 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarContent>
       </Sidebar>
       <SidebarInset className="flex flex-col">
-        <header className="flex h-12 items-center gap-2 border-b bg-background/50 px-4 md:hidden">
-          <SidebarTrigger />
-          <div className="flex items-center gap-2 font-bold">
-            <Bot size={24} className="text-primary"/>
-            <span className="font-headline">ArisCBT</span>
-          </div>
-        </header>
+        <AppShellHeader />
         {children}
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+function AppShellHeader() {
+  const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
+  
+  if (pathname === "/") {
+    // No header on the main chat page for a cleaner look
+    return null;
+  }
+
+  const currentItem = menuItems.find(item => item.href === pathname);
+
+  return (
+    <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
+      <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => setOpenMobile(true)}>
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Toggle navigation menu</span>
+      </Button>
+      
+      <div className="flex items-center gap-2 font-bold">
+        {currentItem && (
+          <>
+            <currentItem.icon className="h-5 w-5 text-primary"/>
+            <span className="font-headline">{currentItem.label}</span>
+          </>
+        )}
+      </div>
+    </header>
   );
 }
