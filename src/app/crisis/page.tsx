@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardDescription,
@@ -5,39 +7,64 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Phone, MessageSquare, Search, Siren } from "lucide-react";
-import Link from "next/link";
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Phone, MessageSquare, Search, Siren, Globe } from 'lucide-react';
+import Link from 'next/link';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { hotlines, HotlineResource } from '@/lib/hotlines';
+import { useMemo } from 'react';
 
-const resources = [
+const internationalResources = [
   {
-    title: "Suicide & Crisis Lifeline",
-    icon: Phone,
-    details: "Call or Text 988",
-    action: "Call 988",
-    href: "tel:988",
-    info: "24/7 Confidential Support",
-  },
-  {
-    title: "Crisis Text Line",
+    title: 'Crisis Text Line',
     icon: MessageSquare,
-    details: "Text HOME to 741741",
-    action: "Text HOME",
-    href: "sms:741741?&body=HOME",
-    info: "24/7 Confidential Support",
+    details: 'Text HOME to 741741',
+    action: 'Text HOME',
+    href: 'sms:741741?&body=HOME',
+    info: 'International - 24/7 Confidential Support',
   },
   {
-    title: "International Crisis Directory",
-    icon: Search,
-    details: "Find a local crisis center anywhere in the world.",
-    action: "Find Local Help",
-    href: "https://findahelpline.com/",
-    info: "Global Directory",
+    title: 'International Crisis Directory',
+    icon: Globe,
+    details: 'Find a local crisis center anywhere in the world.',
+    action: 'Find Local Help',
+    href: 'https://findahelpline.com/',
+    info: 'Global Directory',
   },
 ];
 
 export default function CrisisPage() {
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'users', user.uid) : null),
+    [user, firestore]
+  );
+  
+  const { data: userData, isLoading: isUserDataLoading } = useDoc<{ country: string }>(userDocRef);
+
+  const userCountryCode = userData?.country;
+
+  const userHotlines = useMemo(() => {
+    if (!userCountryCode || !hotlines[userCountryCode]) {
+      return [];
+    }
+    return hotlines[userCountryCode];
+  }, [userCountryCode]);
+
+  const isLoading = isUserLoading || isUserDataLoading;
+
+  const getIcon = (type: string) => {
+    switch(type) {
+      case 'phone': return Phone;
+      case 'text': return MessageSquare;
+      default: return Search;
+    }
+  }
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
       <div className="flex flex-col items-center gap-2 text-center">
@@ -49,36 +76,80 @@ export default function CrisisPage() {
           get immediate, confidential help. Your safety is the priority.
         </p>
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:px-20 xl:px-40">
-        {resources.map((resource) => (
-          <Card
-            key={resource.title}
-            className="flex flex-col border-destructive/50 text-center transition-all hover:shadow-lg dark:bg-destructive/10"
-          >
-            <CardHeader className="items-center">
-              <div className="flex items-center gap-2">
-                <resource.icon className="h-5 w-5 text-muted-foreground" />
-                <CardTitle className="text-xl">{resource.title}</CardTitle>
+
+      {isLoading ? (
+         <div className="flex h-64 w-full items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      ) : (
+        <>
+          {userHotlines.length > 0 && (
+            <div className='lg:px-20 xl:px-40'>
+              <h2 className="mb-4 text-center font-headline text-2xl font-bold">
+                Resources for {hotlines[userCountryCode!][0].countryName}
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2">
+                {userHotlines.map((resource) => (
+                  <ResourceCard key={resource.title} resource={resource} icon={getIcon(resource.type)} />
+                ))}
               </div>
-              <CardDescription>{resource.details}</CardDescription>
+              <hr className="my-8" />
+            </div>
+          )}
+          
+          <div className="lg:px-20 xl:px-40">
+            <h2 className="mb-4 text-center font-headline text-2xl font-bold">
+                International Resources
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              {internationalResources.map((resource) => (
+                <ResourceCard key={resource.title} resource={resource} icon={resource.icon} />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+type ResourceCardProps = {
+    resource: {
+        title: string;
+        details: string;
+        action: string;
+        href: string;
+        info: string;
+    },
+    icon: React.ElementType
+}
+
+const ResourceCard = ({ resource, icon: Icon }: ResourceCardProps) => {
+    return (
+        <Card
+            className="flex flex-col border-destructive/50 text-center transition-all hover:shadow-lg dark:bg-destructive/10"
+        >
+            <CardHeader className="items-center">
+            <div className="flex items-center gap-2">
+                <Icon className="h-5 w-5 text-muted-foreground" />
+                <CardTitle className="text-xl">{resource.title}</CardTitle>
+            </div>
+            <CardDescription>{resource.details}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
-              <Button
+            <Button
                 asChild
                 className="rounded-full px-8 py-6 text-lg"
                 variant="destructive"
-              >
+            >
                 <Link href={resource.href} target="_blank">
-                  {resource.action}
+                {resource.action}
                 </Link>
-              </Button>
+            </Button>
             </CardContent>
             <CardFooter className="justify-center text-sm text-muted-foreground">
-              {resource.info}
+            {resource.info}
             </CardFooter>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+        </Card>
+    )
 }
