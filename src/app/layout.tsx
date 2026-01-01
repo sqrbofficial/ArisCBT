@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Inter } from "next/font/google";
 import AppShell from '@/components/layout/app-shell';
 import { ThemeProvider } from '@/components/theme-provider';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,9 +27,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppShell>
-            {children}
-          </AppShell>
+          <FirebaseClientProvider>
+            <AppShell>
+              {children}
+            </AppShell>
+          </FirebaseClientProvider>
           <Toaster />
         </ThemeProvider>
       </body>

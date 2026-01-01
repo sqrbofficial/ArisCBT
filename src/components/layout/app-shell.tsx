@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { BarChart3, BookHeart, Bot, MessageSquareText, Menu, Settings, Siren } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { BarChart3, BookHeart, Bot, LogOut, MessageSquareText, Settings, Siren, User as UserIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -17,6 +18,11 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth, useUser } from "@/firebase";
+import { signOut } from "firebase/auth";
+import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const menuItems = [
   {
@@ -49,6 +55,42 @@ const crisisItem = {
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Signed Out",
+        description: "You have been successfully signed out.",
+      });
+      router.push('/auth/login');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error Signing Out",
+        description: "There was a problem signing you out. Please try again.",
+      });
+    }
+  };
+
+  if (isUserLoading) {
+    return (
+        <div className="flex h-dvh w-full items-center justify-center">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+    );
+  }
+
+  if (!user) {
+    // If no user, show the children directly which should be the login/signup pages.
+    return <>{children}</>;
+  }
+  
+  const userAvatar = PlaceHolderImages.find((img) => img.id === "user-avatar");
 
   return (
     <SidebarProvider>
@@ -102,41 +144,28 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
+        <SidebarFooter>
+          <div className="flex items-center gap-2 p-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.isAnonymous ? userAvatar?.imageUrl : user.photoURL || userAvatar?.imageUrl} alt="User" />
+              <AvatarFallback>
+                <UserIcon />
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col items-start truncate">
+              <span className="text-sm font-semibold truncate">
+                {user.isAnonymous ? 'Guest User' : user.email}
+              </span>
+            </div>
+            <Button variant="ghost" size="icon" className="ml-auto" onClick={handleSignOut}>
+              <LogOut />
+            </Button>
+          </div>
+        </SidebarFooter>
       </Sidebar>
       <SidebarInset className="flex flex-col">
-        <AppShellHeader />
         {children}
       </SidebarInset>
     </SidebarProvider>
-  );
-}
-
-function AppShellHeader() {
-  const pathname = usePathname();
-  const { setOpenMobile } = useSidebar();
-  
-  if (pathname === "/") {
-    // No header on the main chat page for a cleaner look
-    return null;
-  }
-  const allItems = [...menuItems, crisisItem];
-  const currentItem = allItems.find(item => item.href === pathname);
-
-  return (
-    <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
-      <Button variant="outline" size="icon" className="shrink-0 md:hidden" onClick={() => setOpenMobile(true)}>
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle navigation menu</span>
-      </Button>
-      
-      <div className="flex items-center gap-2 font-bold">
-        {currentItem && (
-          <>
-            <currentItem.icon className={cn("h-5 w-5", currentItem.href === "/crisis" ? "text-destructive" : "text-primary")}/>
-            <span className="font-headline">{currentItem.label}</span>
-          </>
-        )}
-      </div>
-    </header>
   );
 }
