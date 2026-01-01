@@ -78,6 +78,16 @@ service cloud.firestore {
       let existingData = resource.data;
       return incomingData.id == existingData.id;
     }
+    
+    /**
+     * Validates incoming chat message data.
+     */
+    function isValidChatMessage() {
+        let incomingData = request.resource.data;
+        return incomingData.role in ['user', 'ai'] &&
+               incomingData.text is string &&
+               incomingData.createdAt == request.time;
+    }
 
     // ----------------------------------------------------------------------
     // Collection Rules
@@ -103,6 +113,16 @@ service cloud.firestore {
       allow create: if isOwner(userId) && isCreatingValidUserDocument(userId);
       allow update: if isExistingOwner(userId) && isUpdatingValidUserDocument();
       allow delete: if isExistingOwner(userId);
+      
+      /**
+       * @description Secures a user's chat messages. Only the owner can manage
+       *   their own chat history.
+       * @path /users/{userId}/messages/{messageId}
+       */
+      match /messages/{messageId} {
+        // READ/WRITE/DELETE: Only the owner can manage their messages.
+        allow read, write, delete: if isOwner(userId);
+      }
     }
   }
 }

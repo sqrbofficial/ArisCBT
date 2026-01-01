@@ -25,6 +25,33 @@
         "country",
         "createdAt"
       ]
+    },
+    "ChatMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Chat Message",
+      "type": "object",
+      "description": "Represents a single message in a chat session.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the message."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "ai"],
+          "description": "The role of the message sender."
+        },
+        "text": {
+          "type": "string",
+          "description": "The content of the message."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the message was created."
+        }
+      },
+      "required": ["id", "role", "text", "createdAt"]
     }
   },
   "auth": {
@@ -47,6 +74,26 @@
             {
               "name": "userId",
               "description": "The unique identifier for the user, derived from their Firebase Auth UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/messages/{messageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ChatMessage"
+          },
+          "description": "Stores all chat messages for a specific user. Enforces that only the user can access their own messages.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The UID of the user who owns these messages."
+            },
+            {
+              "name": "messageId",
+              "description": "The unique ID for the chat message."
             }
           ]
         }

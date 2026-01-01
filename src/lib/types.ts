@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type CognitiveDistortion = {
   hasDistortion: boolean;
   identifiedDistortion: string;
@@ -8,6 +10,7 @@ export type Message = {
   id: string;
   role: "user" | "ai";
   text: string;
+  createdAt: Timestamp;
   distortion?: CognitiveDistortion | null;
   isTyping?: boolean;
 };

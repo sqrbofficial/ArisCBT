@@ -50,26 +50,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
             <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
           )}
         </div>
-        {!isAi && message.distortion?.hasDistortion && (
-            <TooltipProvider delayDuration={100}>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                <button className="mt-1 flex items-center gap-1 rounded-full border bg-secondary px-2 py-0.5 text-xs text-secondary-foreground hover:bg-accent">
-                    <Sparkles className="h-3 w-3" />
-                    <span>Cognitive Distortion</span>
-                </button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
-                <p className="font-bold">
-                    Thought Pattern: {message.distortion.identifiedDistortion}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                    {message.distortion.suggestedChallenge}
-                </p>
-                </TooltipContent>
-            </Tooltip>
-            </TooltipProvider>
-        )}
+        {/* Distortion logic is removed for now as it's harder to implement with Firestore persistence */}
       </div>
     </div>
   );

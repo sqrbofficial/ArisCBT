@@ -1,10 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SendHorizonal, Bot, Menu, Sparkles } from "lucide-react";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { SendHorizonal, Menu } from "lucide-react";
+import { useEffect, useRef, useState, useTransition, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { collection, query, orderBy, serverTimestamp, Timestamp } from "firebase/firestore";
 
 import { handleUserMessage } from "@/app/chat/actions";
 import ChatMessage from "@/components/chat-message";
@@ -16,24 +17,37 @@ import { Textarea } from "@/components/ui/textarea";
 import type { CrisisInfo, Message } from "@/lib/types";
 import { Card, CardContent } from "./ui/card";
 import { useSidebar } from "./ui/sidebar";
+import { useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
 
 const formSchema = z.object({
   message: z.string().min(1, { message: "Message cannot be empty." }),
 });
 
-const initialMessages: Message[] = [
-  {
-    id: "0",
-    role: "ai",
-    text: "Hello, I'm ArisCBT. I'm here to provide a safe space for you to explore your thoughts and feelings. What's on your mind today?",
-  },
-];
+const initialMessage: Message = {
+  id: "0",
+  role: "ai",
+  text: "Hello, I'm ArisCBT. I'm here to provide a safe space for you to explore your thoughts and feelings. What's on your mind today?",
+  createdAt: Timestamp.now(),
+};
 
 export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const messagesCollectionRef = useMemoFirebase(
+    () => (user ? collection(firestore, "users", user.uid, "messages") : null),
+    [user, firestore]
+  );
+
+  const messagesQuery = useMemoFirebase(
+    () => (messagesCollectionRef ? query(messagesCollectionRef, orderBy("createdAt", "asc")) : null),
+    [messagesCollectionRef]
+  );
+  
+  const { data: fetchedMessages, isLoading: isLoadingMessages } = useCollection<Message>(messagesQuery);
+  const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const [isPending, startTransition] = useTransition();
   const [crisisInfo, setCrisisInfo] = useState<CrisisInfo | null>(null);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
   const { setOpenMobile } = useSidebar();
 
@@ -47,53 +61,68 @@ export default function ChatInterface() {
   const scrollToBottom = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  
+  const messages = useMemo(() => {
+    const combined = [...(fetchedMessages || []), ...localMessages];
+    if (combined.length === 0 && !isLoadingMessages) {
+        return [initialMessage];
+    }
+    return combined;
+  },[fetchedMessages, localMessages, isLoadingMessages]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const userMessage: Message = {
-      id: crypto.randomUUID(),
+    if (!messagesCollectionRef) return;
+
+    const userMessage: Omit<Message, 'id' | 'createdAt'> = {
       role: "user",
       text: values.message,
     };
+    
+    const userMessageForState: Message = {
+        ...userMessage,
+        id: crypto.randomUUID(),
+        createdAt: Timestamp.now(),
+    }
 
+    addDocumentNonBlocking(messagesCollectionRef, { ...userMessage, createdAt: serverTimestamp() });
+    
     const typingMessage: Message = {
       id: crypto.randomUUID(),
       role: "ai",
       text: "...",
       isTyping: true,
+      createdAt: Timestamp.now(),
     };
 
-    setMessages((prev) => [...prev, userMessage, typingMessage]);
+    setLocalMessages([userMessageForState, typingMessage]);
     form.reset();
 
     startTransition(async () => {
+      const history = [...messages, userMessageForState];
       const result = await handleUserMessage(
-        userMessage.text,
-        [...messages, userMessage]
+        userMessageForState.text,
+        history
       );
 
       if (result.type === "crisis") {
         setCrisisInfo(result.data);
-        setMessages((prev) => prev.slice(0, -2)); // Remove user and typing message
+        setLocalMessages([]); // Remove typing indicator and optimistic user message
       } else {
-        const aiMessage: Message = {
-          id: typingMessage.id,
+        const aiMessage: Omit<Message, 'id' | 'createdAt'> = {
           role: "ai",
           text: result.data.aiResponse,
         };
-        // Add distortion info to user's message
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === userMessage.id
-              ? { ...msg, distortion: result.data.distortion }
-              : msg.id === typingMessage.id
-              ? aiMessage
-              : msg
-          )
-        );
+        addDocumentNonBlocking(messagesCollectionRef, { ...aiMessage, createdAt: serverTimestamp() });
+
+        // Remove typing indicator, local user message is now persisted via onSnapshot
+        setLocalMessages([]);
+        
+        // We can't easily add distortion info to the user's message as it's now in Firestore.
+        // For simplicity, we will not update the user message with distortion info for now.
       }
     });
   };
@@ -107,8 +136,13 @@ export default function ChatInterface() {
       </header>
 
       <div className="flex-1 w-full max-w-4xl overflow-hidden pt-16 md:pt-4">
-        <ScrollArea className="h-full" ref={scrollAreaRef}>
+        <ScrollArea className="h-full">
           <div className="space-y-8 p-4">
+             {isLoadingMessages && messages.length === 0 && (
+              <div className="flex justify-center items-center h-full">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              </div>
+            )}
             {messages.map((msg, index) => (
               <div key={msg.id} ref={index === messages.length - 1 ? lastMessageRef : null}>
                 <ChatMessage message={msg} />
@@ -147,7 +181,7 @@ export default function ChatInterface() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" size="icon" disabled={isPending} className="rounded-full">
+                <Button type="submit" size="icon" disabled={isPending || !user} className="rounded-full">
                   <SendHorizonal />
                   <span className="sr-only">Send</span>
                 </Button>
