@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +27,7 @@ const formSchema = z.object({
 const initialMessage: Message = {
   id: "0",
   role: "ai",
-  text: "Hello, I'm ArisCBT. I'm here to provide a safe, non-judgmental space for you to explore your thoughts and feelings. What's on your mind today?",
+  text: "Hello. I'm here to provide a safe, non-judgmental space for you to explore your thoughts and feelings. What's on your mind today?",
   createdAt: Timestamp.now(),
 };
 
