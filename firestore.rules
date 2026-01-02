@@ -76,6 +76,7 @@ service cloud.firestore {
     function isUpdatingValidUserDocument() {
       let incomingData = request.resource.data;
       let existingData = resource.data;
+      // Allow id to be immutable
       return incomingData.id == existingData.id;
     }
     

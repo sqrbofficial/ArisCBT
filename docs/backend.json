@@ -18,6 +18,14 @@
           "type": "string",
           "description": "The timestamp when the user was created.",
           "format": "date-time"
+        },
+        "age": {
+          "type": "string",
+          "description": "The user's age range."
+        },
+        "state": {
+          "type": "string",
+          "description": "The user's state or province."
         }
       },
       "required": [

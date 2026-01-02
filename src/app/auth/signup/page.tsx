@@ -38,6 +38,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -48,6 +49,7 @@ const formSchema = z.object({
 export default function SignUpPage() {
   const auth = useAuth();
   const firestore = useFirestore();
+  const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false)
@@ -80,9 +82,11 @@ export default function SignUpPage() {
 
       toast({
         title: 'Account Created!',
-        description: 'You have been successfully signed up.',
+        description: 'Welcome! Let\'s get you set up.',
       });
-      // The onAuthStateChanged listener will handle the redirect.
+      
+      router.push('/auth/onboarding');
+
     } catch (error: any) {
       console.error('Sign up error:', error);
       toast({
