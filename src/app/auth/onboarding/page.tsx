@@ -44,6 +44,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useRouter } from 'next/navigation';
+import { Card } from '@/components/ui/card';
 
 const ageRanges = [
     "18-24",
