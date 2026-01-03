@@ -31,6 +31,13 @@ const initialMessage: Message = {
   createdAt: Timestamp.now(),
 };
 
+type PlainMessage = {
+    id: string;
+    role: "user" | "ai";
+    text: string;
+    createdAt: string; // ISO string
+};
+
 export default function ChatInterface() {
   const { user } = useUser();
   const firestore = useFirestore();
@@ -83,12 +90,8 @@ export default function ChatInterface() {
       text: values.message,
     };
     
-    const userMessageForState: Message = {
-        ...userMessage,
-        id: crypto.randomUUID(),
-        createdAt: Timestamp.now(),
-    }
-
+    // Write user message to firestore non-blockingly. The `useCollection` hook will
+    // automatically update the UI when this message is persisted.
     addDocumentNonBlocking(messagesCollectionRef, { ...userMessage, createdAt: serverTimestamp() });
     
     const typingMessage: Message = {
@@ -99,39 +102,41 @@ export default function ChatInterface() {
       createdAt: Timestamp.now(),
     };
 
-    setLocalMessages([userMessageForState, typingMessage]);
+    // We only add the AI "typing..." message to local state for an optimistic update.
+    setLocalMessages([typingMessage]);
     form.reset();
 
     startTransition(async () => {
-      const history = [...messages, userMessageForState];
-      const plainHistory = history.map(m => ({
+      // Use the already fetched messages plus the new user message for history
+      const currentHistory = fetchedMessages || [];
+      const historyForAI = [...currentHistory, { ...userMessage, id: 'temp-user', createdAt: Timestamp.now() }];
+      
+      const plainHistory = historyForAI.map(m => ({
         id: m.id,
         role: m.role,
         text: m.text,
-        // Convert timestamp to a serializable format (e.g., ISO string)
         createdAt: m.createdAt.toDate().toISOString(),
       }));
 
       const result = await handleUserMessage(
-        userMessageForState.text,
+        userMessage.text,
         plainHistory
       );
 
       if (result.type === "crisis") {
         setCrisisInfo(result.data);
-        setLocalMessages([]); // Remove typing indicator and optimistic user message
+        // Clear the "typing..." indicator on crisis
+        setLocalMessages([]);
       } else {
         const aiMessage: Omit<Message, 'id' | 'createdAt'> = {
           role: "ai",
           text: result.data.aiResponse,
         };
+        // Write the AI response to Firestore. `useCollection` will pick it up.
         addDocumentNonBlocking(messagesCollectionRef, { ...aiMessage, createdAt: serverTimestamp() });
 
-        // Remove typing indicator, local user message is now persisted via onSnapshot
+        // Clear the local "typing..." message. The new AI message will come from Firestore.
         setLocalMessages([]);
-        
-        // We can't easily add distortion info to the user's message as it's now in Firestore.
-        // For simplicity, we will not update the user message with distortion info for now.
       }
     });
   };
