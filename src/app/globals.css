@@ -40,38 +40,38 @@
   }
 
   .dark {
-    --background: 275 26% 60%; /* #967BB6 */
-    --foreground: 210 40% 98%;
-    --card: 220 40% 16%;
-    --card-foreground: 210 40% 98%;
-    --popover: 220 40% 12%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 340 90% 65%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 10% 23%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 210 10% 23%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 210 10% 23%;
-    --accent-foreground: 210 40% 98%;
+    --background: 149 70% 14%; /* #0d3721 */
+    --foreground: 0 0% 98%; /* almost white */
+    --card: 149 70% 18%; /* A slightly lighter green for cards */
+    --card-foreground: 0 0% 98%;
+    --popover: 149 70% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 9%; /* #171717 */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
-    --border: 210 10% 23%;
-    --input: 210 10% 23%;
-    --ring: 340 90% 65%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 149 70% 20%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 283 18% 44%; /* #805B87 */
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 340 90% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 282 10% 40%; /* #695C73 */
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 210 10% 23%;
-    --sidebar-ring: 340 90% 65%;
+    --sidebar-background: 0 0% 9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 149 70% 20%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 149 70% 20%;
   }
 }
 
