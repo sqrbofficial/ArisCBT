@@ -30,7 +30,6 @@ const prompt = ai.definePrompt({
   name: 'crisisInterventionPrompt',
   input: {schema: CrisisInterventionInputSchema},
   output: {schema: CrisisInterventionOutputSchema},
-  model: 'googleai/gemini-1.0-pro',
   prompt: `You are an AI therapist. Your primary goal is to ensure user safety.
 
   Analyze the following user input to determine if the user is expressing thoughts of self-harm or harm to others. If so, set isCrisis to true and provide a crisis message with resources. Otherwise, set isCrisis to false and provide an empty string for crisisMessage.
