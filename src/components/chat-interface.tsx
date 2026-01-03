@@ -2,13 +2,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SendHorizonal, Menu } from "lucide-react";
+import { SendHorizonal, Menu, Mic, Speaker, Square } from "lucide-react";
 import { useEffect, useRef, useState, useTransition, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { collection, query, orderBy, serverTimestamp, Timestamp } from "firebase/firestore";
 
-import { handleUserMessage } from "@/app/chat/actions";
+import { handleUserMessage, handleTextToSpeech } from "@/app/chat/actions";
 import ChatMessage from "@/components/chat-message";
 import CrisisDialog from "@/components/crisis-dialog";
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,10 @@ export default function ChatInterface() {
   const [crisisInfo, setCrisisInfo] = useState<CrisisInfo | null>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
   const { setOpenMobile } = useSidebar();
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,6 +69,66 @@ export default function ChatInterface() {
       message: "",
     },
   });
+  
+  useEffect(() => {
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        form.setValue('message', transcript);
+        setIsRecording(false);
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
+        setIsRecording(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+      };
+    }
+  }, [form]);
+
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      recognitionRef.current?.stop();
+    } else {
+      recognitionRef.current?.start();
+    }
+    setIsRecording(!isRecording);
+  };
+  
+  const playAudio = async (text: string, messageId: string) => {
+    if (currentlyPlaying === messageId) {
+      audioRef.current?.pause();
+      setCurrentlyPlaying(null);
+      return;
+    }
+
+    setCurrentlyPlaying(messageId);
+    const { audioUrl } = await handleTextToSpeech(text);
+    if (audioUrl) {
+      if (!audioRef.current) {
+        audioRef.current = new Audio();
+      }
+      audioRef.current.src = audioUrl;
+      audioRef.current.play();
+      audioRef.current.onended = () => {
+        setCurrentlyPlaying(null);
+      };
+    } else {
+      setCurrentlyPlaying(null);
+    }
+  };
+
 
   const scrollToBottom = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -90,8 +154,6 @@ export default function ChatInterface() {
       text: values.message,
     };
     
-    // Write user message to firestore non-blockingly. The `useCollection` hook will
-    // automatically update the UI when this message is persisted.
     addDocumentNonBlocking(messagesCollectionRef, { ...userMessage, createdAt: serverTimestamp() });
     
     const typingMessage: Message = {
@@ -102,16 +164,14 @@ export default function ChatInterface() {
       createdAt: Timestamp.now(),
     };
 
-    // We only add the AI "typing..." message to local state for an optimistic update.
     setLocalMessages([typingMessage]);
     form.reset();
 
     startTransition(async () => {
-      // Use the already fetched messages plus the new user message for history
       const currentHistory = fetchedMessages || [];
       const historyForAI = [...currentHistory, { ...userMessage, id: 'temp-user', createdAt: Timestamp.now() }];
       
-      const plainHistory = historyForAI.map(m => ({
+      const plainHistory: PlainMessage[] = historyForAI.map(m => ({
         id: m.id,
         role: m.role,
         text: m.text,
@@ -125,17 +185,14 @@ export default function ChatInterface() {
 
       if (result.type === "crisis") {
         setCrisisInfo(result.data);
-        // Clear the "typing..." indicator on crisis
         setLocalMessages([]);
       } else {
         const aiMessage: Omit<Message, 'id' | 'createdAt'> = {
           role: "ai",
           text: result.data.aiResponse,
         };
-        // Write the AI response to Firestore. `useCollection` will pick it up.
         addDocumentNonBlocking(messagesCollectionRef, { ...aiMessage, createdAt: serverTimestamp() });
 
-        // Clear the local "typing..." message. The new AI message will come from Firestore.
         setLocalMessages([]);
       }
     });
@@ -153,7 +210,11 @@ export default function ChatInterface() {
             )}
             {messages.map((msg, index) => (
               <div key={msg.id} ref={index === messages.length - 1 ? lastMessageRef : null}>
-                <ChatMessage message={msg} />
+                <ChatMessage 
+                  message={msg}
+                  onPlayAudio={playAudio}
+                  isAudioPlaying={currentlyPlaying === msg.id}
+                />
               </div>
             ))}
           </div>
@@ -165,6 +226,10 @@ export default function ChatInterface() {
           <CardContent className="p-2">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-2">
+                <Button type="button" size="icon" variant="ghost" onClick={toggleRecording} disabled={!recognitionRef.current || isPending}>
+                  {isRecording ? <Square /> : <Mic />}
+                  <span className="sr-only">{isRecording ? 'Stop recording' : 'Start recording'}</span>
+                </Button>
                 <FormField
                   control={form.control}
                   name="message"

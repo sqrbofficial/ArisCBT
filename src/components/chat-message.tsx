@@ -3,7 +3,7 @@
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 import { Message } from "@/lib/types";
-import { Bot, Sparkles, User } from "lucide-react";
+import { Bot, Speaker, User, Volume2, VolumeX } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Tooltip,
@@ -11,12 +11,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { Button } from "./ui/button";
 
 type ChatMessageProps = {
   message: Message;
+  onPlayAudio: (text: string, messageId: string) => void;
+  isAudioPlaying: boolean;
 };
 
-export default function ChatMessage({ message }: ChatMessageProps) {
+export default function ChatMessage({ message, onPlayAudio, isAudioPlaying }: ChatMessageProps) {
   const isAi = message.role === "ai";
   const arisAvatar = PlaceHolderImages.find((img) => img.id === "aris-avatar");
   const userAvatar = PlaceHolderImages.find((img) => img.id === "user-avatar");
@@ -50,7 +53,20 @@ export default function ChatMessage({ message }: ChatMessageProps) {
             <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
           )}
         </div>
-        {/* Distortion logic is removed for now as it's harder to implement with Firestore persistence */}
+        {isAi && !message.isTyping && (
+           <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onPlayAudio(message.text, message.id)}>
+                    {isAudioPlaying ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{isAudioPlaying ? 'Stop audio' : 'Listen to message'}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
     </div>
   );

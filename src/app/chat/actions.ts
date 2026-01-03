@@ -14,6 +14,7 @@ import {
 import {
   personalizedSocraticQuestioning,
 } from "@/ai/flows/personalized-socratic-questioning";
+import { textToSpeech } from "@/ai/flows/text-to-speech";
 
 // A plain message type for server action arguments
 type PlainMessage = {
@@ -72,4 +73,14 @@ export async function handleUserMessage(
       distortion: distortionCheck.hasDistortion ? distortionCheck : null,
     },
   };
+}
+
+export async function handleTextToSpeech(text: string): Promise<{ audioUrl: string | null }> {
+  try {
+    const result = await textToSpeech(text);
+    return { audioUrl: result.media };
+  } catch (error) {
+    console.error("Text-to-speech failed:", error);
+    return { audioUrl: null };
+  }
 }
