@@ -129,7 +129,7 @@ export default function ChatInterface() {
   };
   
   return (
-    <div className="relative flex h-full max-h-dvh flex-col items-center">
+    <div className="relative flex h-full max-h-dvh flex-col items-center bg-background">
       <header className="fixed top-0 z-10 flex w-full max-w-4xl items-center justify-between p-4 md:hidden">
         <Button variant="ghost" size="icon" onClick={() => setOpenMobile(true)}>
           <Menu />
@@ -154,7 +154,7 @@ export default function ChatInterface() {
       </div>
 
       <div className="w-full max-w-4xl p-4 pb-8">
-        <Card className="rounded-2xl shadow-lg">
+        <Card className="rounded-2xl shadow-lg bg-card/80 dark:bg-sidebar-accent/50">
           <CardContent className="p-2">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-2">
@@ -166,7 +166,7 @@ export default function ChatInterface() {
                       <FormControl>
                         <Textarea
                           placeholder="Type your message here..."
-                          className="min-h-0 resize-none border-0 shadow-none focus-visible:ring-0"
+                          className="min-h-0 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
                           rows={1}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
