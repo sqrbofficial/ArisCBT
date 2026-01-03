@@ -104,7 +104,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar variant="floating">
         <SidebarHeader>
           <Button variant="ghost" className="h-auto justify-start p-2" asChild>
             <Link href="/" className="flex items-center gap-2">
