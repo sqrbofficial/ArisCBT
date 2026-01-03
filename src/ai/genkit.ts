@@ -7,5 +7,5 @@ export const ai = genkit({
       // The API key is read from the GEMINI_API_KEY environment variable.
     }),
   ],
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'gemini-1.5-flash-latest',
 });
