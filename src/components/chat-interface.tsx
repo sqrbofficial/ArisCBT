@@ -104,9 +104,17 @@ export default function ChatInterface() {
 
     startTransition(async () => {
       const history = [...messages, userMessageForState];
+      const plainHistory = history.map(m => ({
+        id: m.id,
+        role: m.role,
+        text: m.text,
+        // Convert timestamp to a serializable format (e.g., ISO string)
+        createdAt: m.createdAt.toDate().toISOString(),
+      }));
+
       const result = await handleUserMessage(
         userMessageForState.text,
-        history
+        plainHistory
       );
 
       if (result.type === "crisis") {

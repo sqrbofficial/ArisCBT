@@ -14,7 +14,14 @@ import {
 import {
   personalizedSocraticQuestioning,
 } from "@/ai/flows/personalized-socratic-questioning";
-import type { Message } from "@/lib/types";
+
+// A plain message type for server action arguments
+type PlainMessage = {
+    id: string;
+    role: "user" | "ai";
+    text: string;
+    createdAt: string; // ISO string
+};
 
 type HandleMessageResult =
   | { type: "crisis"; data: CrisisInterventionOutput }
@@ -28,7 +35,7 @@ type HandleMessageResult =
 
 export async function handleUserMessage(
   message: string,
-  history: Message[]
+  history: PlainMessage[]
 ): Promise<HandleMessageResult> {
   const crisisCheck = await crisisInterventionAndResourceProvision({
     userInput: message,
