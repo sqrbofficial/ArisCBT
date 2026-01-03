@@ -19,7 +19,6 @@ import { useAuth } from '@/firebase';
 import Link from 'next/link';
 import { Bot } from 'lucide-react';
 import { useState } from 'react';
-import { Logo } from '@/components/ui/logo';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -63,7 +62,7 @@ export default function ForgotPasswordPage() {
         <div className="w-full max-w-md">
             <div className="flex flex-col items-center text-center mb-8">
                 <Link href="/" className="flex items-center gap-2 mb-4">
-                    <Logo className="h-8 w-8" />
+                    <Bot className="h-8 w-8" />
                     <span className="font-headline text-2xl font-bold">ArisCBT</span>
                 </Link>
                 <h1 className="text-2xl font-bold tracking-tight">Forgot Password</h1>

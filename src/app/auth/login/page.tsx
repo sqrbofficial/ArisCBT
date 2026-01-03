@@ -20,7 +20,6 @@ import Link from 'next/link';
 import { Bot } from 'lucide-react';
 import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
-import { Logo } from '@/components/ui/logo';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -72,7 +71,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">
           <Link href="/" className="mb-4 flex items-center gap-2">
-            <Logo className="h-8 w-8" />
+            <Bot className="h-8 w-8" />
             <span className="font-headline text-2xl font-bold">ArisCBT</span>
           </Link>
           <h1 className="text-2xl font-bold tracking-tight">Welcome Back</h1>

@@ -23,7 +23,6 @@ import { signOut } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Logo } from "../ui/logo";
 
 const menuItems = [
   {
@@ -99,7 +98,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <SidebarHeader>
           <Button variant="ghost" className="h-auto justify-start p-2" asChild>
             <Link href="/">
-              <Logo />
+              <Bot className="h-8 w-8" />
               <div className="flex flex-col items-start">
                 <span className="font-headline text-lg font-bold">ArisCBT</span>
                 <span className="text-xs text-muted-foreground">CBT Companion</span>

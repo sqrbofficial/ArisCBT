@@ -45,7 +45,6 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { Logo } from '@/components/ui/logo';
 
 const ageRanges = [
     "18-24",
@@ -122,7 +121,7 @@ export default function OnboardingPage() {
       <div className="w-full max-w-lg">
         <div className="flex flex-col items-center text-center mb-8">
             <Link href="/" className="flex items-center gap-2 mb-4">
-                <Logo className="h-8 w-8" />
+                <Bot className="h-8 w-8" />
                 <span className="font-headline text-2xl font-bold">ArisCBT</span>
             </Link>
             <h1 className="text-3xl font-bold tracking-tight">Tell us about yourself</h1>
