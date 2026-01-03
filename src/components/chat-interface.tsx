@@ -129,7 +129,7 @@ export default function ChatInterface() {
   };
   
   return (
-    <div className="relative flex h-full max-h-dvh flex-col items-center bg-background/95">
+    <div className="relative flex h-full max-h-dvh flex-col items-center">
       <div className="flex-1 w-full max-w-4xl overflow-hidden pt-4 md:pt-4">
         <ScrollArea className="h-full">
           <div className="space-y-8 p-4">
@@ -148,7 +148,7 @@ export default function ChatInterface() {
       </div>
 
       <div className="w-full max-w-4xl p-4 pb-8">
-        <Card className="rounded-2xl shadow-lg bg-card/80 dark:bg-card">
+        <Card className="rounded-2xl shadow-lg border-2 border-primary/50">
           <CardContent className="p-2">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-2">
