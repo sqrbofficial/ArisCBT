@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'ArisCBT',
   webDir: 'out',
   server: {
-    url: 'https://your-app-name.vercel.app', // IMPORTANT: Replace with your actual Vercel URL
+    url: 'https://ariscbt.vercel.app/',
   }
 };
 
