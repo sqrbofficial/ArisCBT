@@ -5,8 +5,7 @@ const config: CapacitorConfig = {
   appName: 'ArisCBT',
   webDir: 'out',
   server: {
-    url: 'http://192.168.1.100:9002', // Change this to your computer's local IP address
-    cleartext: true
+    url: 'https://your-app-name.vercel.app', // IMPORTANT: Replace with your actual Vercel URL
   }
 };
 
