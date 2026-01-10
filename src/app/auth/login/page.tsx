@@ -130,7 +130,7 @@ export default function LoginPage() {
                 </div>
 
 
-                <Button type="submit" size="lg" className="w-full !mt-6 h-14 rounded-full text-lg font-semibold text-white" disabled={isSubmitting}>
+                <Button type="submit" size="lg" className="w-full !mt-6 h-14 rounded-full text-lg font-semibold" disabled={isSubmitting}>
                     Login
                 </Button>
             </form>

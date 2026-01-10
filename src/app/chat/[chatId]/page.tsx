@@ -7,7 +7,6 @@ import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import AppShell from "@/components/layout/app-shell";
 
 export default function ChatSessionPage() {
   const { user, isUserLoading } = useUser();
@@ -30,10 +29,9 @@ export default function ChatSessionPage() {
   }
 
   return (
-    <AppShell>
        <div className="flex h-full flex-col bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
         <header className="flex items-center justify-between p-4 flex-shrink-0">
-            <SidebarTrigger />
+            <SidebarTrigger className="md:hidden" />
             <h1 className="text-xl font-bold">ArisCBT</h1>
             <Button variant="ghost" size="icon">
                 <MoreVertical />
@@ -41,6 +39,5 @@ export default function ChatSessionPage() {
         </header>
         <ChatInterface chatId={chatId} />
       </div>
-    </AppShell>
   );
 }

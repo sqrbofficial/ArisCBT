@@ -23,7 +23,7 @@ export default function SplashPage() {
         <Button
           asChild
           size="lg"
-          className="w-full max-w-sm rounded-full py-6 text-lg font-semibold text-white"
+          className="w-full max-w-sm rounded-full py-6 text-lg font-semibold"
         >
           <Link href="/auth/login">Get Started</Link>
         </Button>
