@@ -59,15 +59,15 @@ export default function SettingsPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="md:hidden" />
           <h1 className="font-headline text-2xl font-bold">Settings</h1>
         </div>
-        <Card>
+        <Card className="bg-black/30 border-white/20 text-white">
           <CardHeader>
             <CardTitle>Appearance</CardTitle>
-            <CardDescription>
+            <CardDescription className="text-white/80">
               Choose how you would like the app to look.
             </CardDescription>
           </CardHeader>
@@ -81,16 +81,16 @@ export default function SettingsPage() {
                 <RadioGroupItem value="light" id="light" className="peer sr-only" />
                 <Label
                   htmlFor="light"
-                  className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                  className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-white/20 bg-transparent p-4 hover:bg-white/10 hover:text-white peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                 >
                   Light
                 </Label>
               </div>
               <div>
-                <RadioGroupItem value="dark" id="dark" className="peer sr  -only" />
+                <RadioGroupItem value="dark" id="dark" className="peer sr-only" />
                 <Label
                   htmlFor="dark"
-                  className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                  className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-white/20 bg-transparent p-4 hover:bg-white/10 hover:text-white peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                 >
                   Dark
                 </Label>
@@ -99,7 +99,7 @@ export default function SettingsPage() {
                 <RadioGroupItem value="system" id="system" className="peer sr-only" />
                 <Label
                   htmlFor="system"
-                  className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                  className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-white/20 bg-transparent p-4 hover:bg-white/10 hover:text-white peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                 >
                   System
                 </Label>
@@ -107,15 +107,15 @@ export default function SettingsPage() {
             </RadioGroup>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-black/30 border-white/20 text-white">
           <CardHeader>
             <CardTitle>Data Management</CardTitle>
-            <CardDescription>
+            <CardDescription className="text-white/80">
               Manage your personal data and chat history.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white/80">
               Clearing your chat history will permanently delete all messages
               from your conversations. This action cannot be undone.
             </p>

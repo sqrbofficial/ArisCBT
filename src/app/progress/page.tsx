@@ -115,16 +115,16 @@ export default function ProgressPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="md:hidden" />
           <h1 className="font-headline text-2xl font-bold">Your Progress</h1>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="lg:col-span-1">
+          <Card className="lg:col-span-1 bg-black/30 border-white/20 text-white">
             <CardHeader>
               <CardTitle>Log Your Mood</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-white/80">
                 Select a day and record how you're feeling.
               </CardDescription>
             </CardHeader>
@@ -143,8 +143,8 @@ export default function ProgressPage() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
+                                  "pl-3 text-left font-normal bg-transparent hover:bg-white/10 border-white/20",
+                                  !field.value && "text-white/80"
                                 )}
                               >
                                 {field.value ? (
@@ -204,6 +204,7 @@ export default function ProgressPage() {
                         <FormControl>
                           <Textarea
                             placeholder="Any thoughts or feelings to note?"
+                            className="bg-transparent border-white/20 placeholder:text-white/50"
                             {...field}
                           />
                         </FormControl>
@@ -212,7 +213,7 @@ export default function ProgressPage() {
                   />
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit">
+                  <Button type="submit" className="bg-[#A54A41] hover:bg-[#A54A41]/90">
                     <Save className="mr-2 h-4 w-4" /> Save Entry
                   </Button>
                 </CardFooter>
@@ -220,10 +221,10 @@ export default function ProgressPage() {
             </Form>
           </Card>
 
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 bg-black/30 border-white/20 text-white">
             <CardHeader>
               <CardTitle>Mood Over Time</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-white/80">
                 A visualization of your mood entries.
               </CardDescription>
             </CardHeader>
@@ -236,19 +237,21 @@ export default function ProgressPage() {
                   className="h-[300px] w-full"
                 >
                   <LineChart data={sortedData}>
-                    <CartesianGrid vertical={false} />
+                    <CartesianGrid vertical={false} stroke="hsla(var(--foreground), 0.2)" />
                     <XAxis
                       dataKey="formattedDate"
                       tickLine={false}
                       axisLine={false}
                       tickMargin={8}
                       tickFormatter={(value) => value.slice(0, 6)}
+                      stroke="hsla(var(--foreground), 0.8)"
                     />
                     <YAxis
                       dataKey="mood"
                       domain={[1, 10]}
                       tickLine={false}
                       axisLine={false}
+                      stroke="hsla(var(--foreground), 0.8)"
                     />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Line
@@ -261,8 +264,8 @@ export default function ProgressPage() {
                   </LineChart>
                 </ChartContainer>
               ) : (
-                <div className="flex h-[300px] items-center justify-center rounded-md border border-dashed">
-                  <p className="text-sm text-muted-foreground">
+                <div className="flex h-[300px] items-center justify-center rounded-md border border-dashed border-white/30">
+                  <p className="text-sm text-white/80">
                     Not enough data to display a chart. Please add at least two
                     mood entries.
                   </p>

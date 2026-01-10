@@ -26,7 +26,7 @@ const resourceSections = [
 export default function ResourcesPage() {
   return (
     <AppShell>
-      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
         <div className="flex flex-col items-center gap-2 text-center">
             <div className="flex items-center gap-4 self-start">
                 <SidebarTrigger className="md:hidden" />
@@ -34,22 +34,22 @@ export default function ResourcesPage() {
                     <BookOpen className="text-primary" /> Learning Resources
                 </h1>
             </div>
-          <p className="max-w-2xl text-muted-foreground">
+          <p className="max-w-2xl text-white/80">
             Expand your knowledge about CBT, mindfulness, and mental wellness.
           </p>
         </div>
 
-          <Card className="lg:mx-auto lg:max-w-4xl">
+          <Card className="lg:mx-auto lg:max-w-4xl bg-black/30 border-white/20 text-white">
               <CardHeader>
                   <CardTitle>Resource Library</CardTitle>
-                  <CardDescription>Information to support your therapy journey.</CardDescription>
+                  <CardDescription className="text-white/80">Information to support your therapy journey.</CardDescription>
               </CardHeader>
               <CardContent>
                   <Accordion type="single" collapsible className="w-full">
                       {resourceSections.map((section, index) => (
-                          <AccordionItem value={`item-${index}`} key={index}>
-                              <AccordionTrigger className="text-lg">{section.title}</AccordionTrigger>
-                              <AccordionContent className="prose prose-stone dark:prose-invert max-w-none text-foreground/80 whitespace-pre-wrap">
+                          <AccordionItem value={`item-${index}`} key={index} className="border-white/20">
+                              <AccordionTrigger className="text-lg hover:no-underline">{section.title}</AccordionTrigger>
+                              <AccordionContent className="prose prose-stone dark:prose-invert max-w-none text-white/80 whitespace-pre-wrap">
                                   {section.content}
                               </AccordionContent>
                           </AccordionItem>

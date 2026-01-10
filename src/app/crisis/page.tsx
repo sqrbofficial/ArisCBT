@@ -69,7 +69,7 @@ export default function CrisisPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
         <div className="flex flex-col items-center gap-2 text-center">
             <div className="flex items-center gap-4 self-start">
                 <SidebarTrigger className="md:hidden" />
@@ -77,7 +77,7 @@ export default function CrisisPage() {
                 Immediate Help <Siren className="h-7 w-7" />
                 </h1>
             </div>
-          <p className="max-w-2xl text-muted-foreground">
+          <p className="max-w-2xl text-white/80">
             If you are in crisis, you are not alone. Please use these resources to
             get immediate, confidential help. Your safety is the priority.
           </p>
@@ -99,7 +99,7 @@ export default function CrisisPage() {
                     <ResourceCard key={resource.title} resource={resource} icon={getIcon(resource.type)} />
                   ))}
                 </div>
-                <hr className="my-8" />
+                <hr className="my-8 border-white/20" />
               </div>
             )}
             
@@ -134,14 +134,14 @@ type ResourceCardProps = {
 const ResourceCard = ({ resource, icon: Icon }: ResourceCardProps) => {
     return (
         <Card
-            className="flex flex-col border-destructive/50 text-center transition-all hover:shadow-lg dark:bg-destructive/10"
+            className="flex flex-col border-destructive/50 text-center transition-all hover:shadow-lg bg-black/30 text-white"
         >
             <CardHeader className="items-center">
             <div className="flex items-center gap-2">
-                <Icon className="h-5 w-5 text-muted-foreground" />
+                <Icon className="h-5 w-5 text-white/80" />
                 <CardTitle className="text-xl">{resource.title}</CardTitle>
             </div>
-            <CardDescription>{resource.details}</CardDescription>
+            <CardDescription className="text-white/80">{resource.details}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
             <Button
@@ -154,7 +154,7 @@ const ResourceCard = ({ resource, icon: Icon }: ResourceCardProps) => {
                 </Link>
             </Button>
             </CardContent>
-            <CardFooter className="justify-center text-sm text-muted-foreground">
+            <CardFooter className="justify-center text-sm text-white/80">
             {resource.info}
             </CardFooter>
         </Card>
