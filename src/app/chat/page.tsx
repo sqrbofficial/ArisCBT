@@ -4,7 +4,6 @@ import {
   MessageSquareText,
   MoreVertical,
   Trash2,
-  PlusCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -14,6 +13,7 @@ import { useTransition, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { format, isToday, isWithinInterval, subDays } from 'date-fns';
 import AppShell from '@/components/layout/app-shell';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 type ChatSession = {
   id: string;
@@ -30,12 +30,6 @@ export default function ChatHistoryPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/auth/login');
-    }
-  }, [user, isUserLoading, router]);
-
   const chatsCollectionRef = useMemoFirebase(
     () => (user ? collection(firestore, 'users', user.uid, 'chats') : null),
     [user, firestore]
@@ -47,6 +41,12 @@ export default function ChatHistoryPage() {
   );
   
   const { data: chats, isLoading } = useCollection<ChatSession>(chatsQuery);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, isUserLoading, router]);
 
   const handleCreateNewChat = () => {
     startTransition(async () => {
@@ -61,8 +61,6 @@ export default function ChatHistoryPage() {
 
   const handleDeleteChat = async (chatId: string) => {
     if (!user) return;
-    // Note: This deletes the chat session document, but not the subcollection of messages.
-    // A cloud function would be needed for full cleanup.
     await deleteDoc(doc(firestore, 'users', user.uid, 'chats', chatId));
   };
   
@@ -87,46 +85,47 @@ export default function ChatHistoryPage() {
 
 
   return (
-    <div className="flex h-full flex-col bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
-        <header className="flex items-center justify-between p-4">
-            {/* Placeholder for sidebar trigger if we re-integrate AppShell */}
-            <div></div> 
-            <h1 className="text-xl font-bold">ArisCBT</h1>
-            <Button variant="ghost" size="icon">
-                <MoreVertical />
-            </Button>
-        </header>
-
-        <main className="flex-1 overflow-y-auto p-4">
-            <section className="mb-8">
-                <h2 className="text-lg font-semibold mb-4">New Chats</h2>
-                <Button 
-                    className="w-full h-14 rounded-xl bg-[#A54A41] text-lg font-semibold text-white hover:bg-[#A54A41]/90"
-                    onClick={handleCreateNewChat}
-                    disabled={isPending}
-                >
-                    {isPending ? 'Creating...' : 'Create New Chats'}
+    <AppShell>
+        <div className="flex h-full flex-col bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
+            <header className="flex items-center justify-between p-4 flex-shrink-0">
+                <SidebarTrigger />
+                <h1 className="text-xl font-bold">ArisCBT</h1>
+                <Button variant="ghost" size="icon">
+                    <MoreVertical />
                 </Button>
-            </section>
+            </header>
 
-            <section>
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold">Chats History</h2>
-                    <Link href="#" className="text-sm font-medium hover:underline">See More</Link>
-                </div>
+            <main className="flex-1 overflow-y-auto p-4">
+                <section className="mb-8">
+                    <h2 className="text-lg font-semibold mb-4">New Chats</h2>
+                    <Button 
+                        className="w-full h-14 rounded-xl bg-[#A54A41] text-lg font-semibold text-white hover:bg-[#A54A41]/90"
+                        onClick={handleCreateNewChat}
+                        disabled={isPending}
+                    >
+                        {isPending ? 'Creating...' : 'Create New Chats'}
+                    </Button>
+                </section>
 
-                {isLoading ? (
-                    <div className="text-center p-4">Loading chats...</div>
-                ) : (
-                    <div className="space-y-6">
-                        {todayChats.length > 0 && <ChatGroup title="Today" chats={todayChats} onDelete={handleDeleteChat} />}
-                        {last7DaysChats.length > 0 && <ChatGroup title="7 Days" chats={last7DaysChats} onDelete={handleDeleteChat} />}
-                        {olderChats.length > 0 && <ChatGroup title="30 Days" chats={olderChats} onDelete={handleDeleteChat} />}
+                <section>
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-lg font-semibold">Chats History</h2>
+                        <Link href="#" className="text-sm font-medium hover:underline">See More</Link>
                     </div>
-                )}
-            </section>
-        </main>
-    </div>
+
+                    {isLoading ? (
+                        <div className="text-center p-4">Loading chats...</div>
+                    ) : (
+                        <div className="space-y-6">
+                            {todayChats.length > 0 && <ChatGroup title="Today" chats={todayChats} onDelete={handleDeleteChat} />}
+                            {last7DaysChats.length > 0 && <ChatGroup title="7 Days" chats={last7DaysChats} onDelete={handleDeleteChat} />}
+                            {olderChats.length > 0 && <ChatGroup title="30 Days" chats={olderChats} onDelete={handleDeleteChat} />}
+                        </div>
+                    )}
+                </section>
+            </main>
+        </div>
+    </AppShell>
   );
 }
 
@@ -148,7 +147,7 @@ const ChatGroup = ({ title, chats, onDelete }: ChatGroupProps) => {
                             <MessageSquareText className="h-5 w-5 flex-shrink-0" />
                             <span className="truncate">{chat.title}</span>
                         </Link>
-                        <Button variant="ghost" size="icon" onClick={() => onDelete(chat.id)} className="text-destructive hover:text-destructive/80">
+                        <Button variant="ghost" size="icon" onClick={() => onDelete(chat.id)} className="text-red-500 hover:text-red-500/80">
                             <Trash2 className="h-5 w-5" />
                         </Button>
                     </div>
