@@ -89,7 +89,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
-  const arisAvatar = PlaceHolderImages.find(img => img.id === 'aris-avatar');
 
   return (
     <SidebarProvider>
@@ -98,7 +97,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <Button variant="ghost" className="h-auto justify-start p-2" asChild>
             <Link href="/chat" className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={arisAvatar?.imageUrl} alt="ArisCBT" />
+                <AvatarImage src="https://picsum.photos/seed/1/40/40" alt="ArisCBT" />
                 <AvatarFallback><Bot /></AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start">
