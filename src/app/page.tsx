@@ -14,7 +14,7 @@ export default function SplashPage() {
       </div>
 
       <div className="z-10 flex flex-col items-center justify-center text-center">
-        <h1 className="font-russo-one text-5xl font-extrabold tracking-tight md:text-7xl">
+        <h1 className="font-russo-one text-5xl font-extrabold tracking-normal md:text-7xl">
           ArisCBT
         </h1>
       </div>
