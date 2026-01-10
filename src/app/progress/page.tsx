@@ -213,7 +213,7 @@ export default function ProgressPage() {
                   />
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="bg-[#A54A41] hover:bg-[#A54A41]/90">
+                  <Button type="submit">
                     <Save className="mr-2 h-4 w-4" /> Save Entry
                   </Button>
                 </CardFooter>

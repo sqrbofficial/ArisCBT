@@ -123,7 +123,7 @@ export default function SignUpPage() {
                                 type="text"
                                 placeholder="Enter Your Name"
                                 autoComplete="name"
-                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50 focus:ring-offset-[#A54A41]"
+                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50"
                                 {...field}
                             />
                         </div>
@@ -145,7 +145,7 @@ export default function SignUpPage() {
                                 type="email"
                                 placeholder="Enter Your Email"
                                 autoComplete="email"
-                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50 focus:ring-offset-[#A54A41]"
+                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50"
                                 {...field}
                             />
                         </div>
@@ -167,7 +167,7 @@ export default function SignUpPage() {
                                 type="password"
                                 placeholder="Enter Your Password"
                                 autoComplete="new-password"
-                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50 focus:ring-offset-[#A54A41]"
+                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50"
                                 {...field}
                             />
                         </div>
@@ -177,7 +177,7 @@ export default function SignUpPage() {
                 )}
                 />
                 
-                <Button type="submit" size="lg" className="w-full !mt-6 h-14 rounded-full bg-[#A54A41] text-lg font-semibold text-white hover:bg-[#A54A41]/90 focus:ring-offset-background" disabled={isSubmitting}>
+                <Button type="submit" size="lg" className="w-full !mt-6 h-14 rounded-full text-lg font-semibold text-white" disabled={isSubmitting}>
                     Create Account
                 </Button>
             </form>

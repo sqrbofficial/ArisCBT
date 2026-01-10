@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
                                 type="email"
                                 placeholder="Enter Your Email"
                                 autoComplete="email"
-                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50 focus:ring-offset-[#A54A41]"
+                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50"
                                 {...field}
                             />
                         </div>
@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
                 )}
                 />
 
-                <Button type="submit" size="lg" className="w-full !mt-6 h-14 rounded-full bg-[#A54A41] text-lg font-semibold text-white hover:bg-[#A54A41]/90 focus:ring-offset-background" disabled={isSubmitting}>
+                <Button type="submit" size="lg" className="w-full !mt-6 h-14 rounded-full text-lg font-semibold text-white" disabled={isSubmitting}>
                     Send Reset Link
                 </Button>
             </form>

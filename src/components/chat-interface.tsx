@@ -259,7 +259,7 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
                   <span className="sr-only">{isRecording ? 'Stop recording' : 'Start recording'}</span>
                 </Button>
             </div>
-            <Button type="submit" size="icon" disabled={isPending || !user} className="rounded-full bg-[#A54A41] h-12 w-12 flex-shrink-0">
+            <Button type="submit" size="icon" disabled={isPending || !user} className="rounded-full h-12 w-12 flex-shrink-0">
               <SendHorizonal />
               <span className="sr-only">Send</span>
             </Button>

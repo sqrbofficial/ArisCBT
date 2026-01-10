@@ -99,7 +99,7 @@ export default function ChatHistoryPage() {
                 <section className="mb-8">
                     <h2 className="text-lg font-semibold mb-4">New Chats</h2>
                     <Button 
-                        className="w-full h-14 rounded-xl bg-[#A54A41] text-lg font-semibold text-white hover:bg-[#A54A41]/90"
+                        className="w-full h-14 rounded-xl text-lg font-semibold text-white"
                         onClick={handleCreateNewChat}
                         disabled={isPending}
                     >

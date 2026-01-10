@@ -24,7 +24,7 @@ export default function ChatMessage({ message, onPlayAudio, isAudioPlaying }: Ch
     >
       <div className={cn(
           "max-w-[75%] rounded-2xl p-4 text-white",
-          isAi ? "bg-[#A54A41]" : "bg-black/40"
+          isAi ? "bg-primary" : "bg-black/40"
       )}>
         <div className="prose prose-stone dark:prose-invert max-w-none text-white">
           {message.isTyping ? (
