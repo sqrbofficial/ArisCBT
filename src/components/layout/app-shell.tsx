@@ -33,7 +33,6 @@ import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const menuItems = [
   {
@@ -88,11 +87,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
-
   return (
     <SidebarProvider>
-      <Sidebar variant="floating">
+      <Sidebar variant="floating" collapsible="icon">
         <SidebarHeader>
           <Button variant="ghost" className="h-auto justify-start p-2" asChild>
             <Link href="/chat" className="flex items-center gap-2">
@@ -156,8 +153,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <AvatarImage
                   src={
                     user.isAnonymous
-                      ? userAvatar?.imageUrl
-                      : user.photoURL || userAvatar?.imageUrl
+                      ? "https://picsum.photos/seed/2/40/40"
+                      : user.photoURL || "https://picsum.photos/seed/2/40/40"
                   }
                   alt="User"
                 />
