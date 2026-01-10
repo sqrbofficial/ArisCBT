@@ -118,10 +118,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname.startsWith(item.href)}
+                  isActive={pathname.startsWith(item.href) && !pathname.includes('/chat/')}
                   className={cn(
                     'justify-start',
-                     pathname.startsWith(item.href) && 'font-bold'
+                     pathname.startsWith(item.href) && !pathname.includes('/chat/') && 'font-bold'
                   )}
                   tooltip={item.label}
                 >
@@ -184,8 +184,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="flex flex-col">
-        {/* The header from the new home screen design is not part of the shell.
-            Individual pages will now control their own headers. */}
         {children}
       </SidebarInset>
     </SidebarProvider>

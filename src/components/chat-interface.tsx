@@ -204,10 +204,10 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
   };
   
   return (
-    <div className="relative flex h-full max-h-dvh flex-col items-center">
+    <div className="relative flex-1 flex h-full max-h-dvh flex-col items-center overflow-hidden">
       <div className="flex-1 w-full max-w-4xl overflow-hidden pt-4 md:pt-4">
         <ScrollArea className="h-full">
-          <div className="space-y-8 p-4">
+          <div className="space-y-4 p-4">
              {isLoadingMessages && messages.length <= 1 && (
               <div className="flex justify-center items-center h-full">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -227,23 +227,18 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
       </div>
 
       <div className="w-full max-w-4xl p-4 pb-8">
-        <Card className="rounded-2xl shadow-lg border-2 border-primary/50">
-          <CardContent className="p-2">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-2">
-                <Button type="button" size="icon" variant="ghost" onClick={toggleRecording} disabled={!recognitionRef.current || isPending}>
-                  {isRecording ? <Square /> : <Mic />}
-                  <span className="sr-only">{isRecording ? 'Stop recording' : 'Start recording'}</span>
-                </Button>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-2">
+            <div className="relative flex-1">
                 <FormField
                   control={form.control}
                   name="message"
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem>
                       <FormControl>
                         <Textarea
-                          placeholder="Type your message here..."
-                          className="min-h-0 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
+                          placeholder="write your question to ai chatbot here"
+                          className="min-h-0 resize-none rounded-full border-none bg-black/30 pl-12 pr-6 py-3 text-white placeholder:text-white/50"
                           rows={1}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
@@ -259,14 +254,17 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" size="icon" disabled={isPending || !user} className="rounded-full">
-                  <SendHorizonal />
-                  <span className="sr-only">Send</span>
+                <Button type="button" size="icon" variant="ghost" onClick={toggleRecording} disabled={!recognitionRef.current || isPending} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white">
+                  {isRecording ? <Square /> : <Mic />}
+                  <span className="sr-only">{isRecording ? 'Stop recording' : 'Start recording'}</span>
                 </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+            </div>
+            <Button type="submit" size="icon" disabled={isPending || !user} className="rounded-full bg-[#A54A41] h-12 w-12 flex-shrink-0">
+              <SendHorizonal />
+              <span className="sr-only">Send</span>
+            </Button>
+          </form>
+        </Form>
       </div>
       
       {crisisInfo && (
