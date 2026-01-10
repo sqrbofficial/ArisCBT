@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { useAuth } from '@/firebase';
 import Link from 'next/link';
-import { Bot } from 'lucide-react';
+import { Lock, User } from 'lucide-react';
 import { useState } from 'react';
 
 const formSchema = z.object({
@@ -58,18 +58,18 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-background p-4">
-        <div className="w-full max-w-md">
-            <div className="flex flex-col items-center text-center mb-8">
-                <Link href="/" className="flex items-center gap-2 mb-4">
-                    <Bot className="h-8 w-8" />
-                    <span className="font-headline text-2xl font-bold">ArisCBT</span>
-                </Link>
-                <h1 className="text-2xl font-bold tracking-tight">Forgot Password</h1>
-                <p className="text-muted-foreground">
-                    Enter your email to receive a password reset link.
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] p-4 text-white">
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="z-10 w-full max-w-sm">
+            <div className="mb-8 flex flex-col items-center text-center">
+                <h1 className="font-russo-one text-5xl font-extrabold tracking-normal">
+                    ArisCBT
+                </h1>
+                <p className="mt-2 text-white/80">
+                    Reset Your Password
                 </p>
             </div>
+
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
@@ -77,26 +77,31 @@ export default function ForgotPasswordPage() {
                 name="email"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Email</FormLabel>
                     <FormControl>
-                        <Input
-                        placeholder="your@email.com"
-                        {...field}
-                        />
+                         <div className="relative">
+                            <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50" />
+                            <Input
+                                type="email"
+                                placeholder="Enter Your Email"
+                                autoComplete="email"
+                                className="h-14 rounded-full border-white/20 bg-black/30 pl-12 text-base text-white placeholder:text-white/50 focus:ring-offset-[#A54A41]"
+                                {...field}
+                            />
+                        </div>
                     </FormControl>
                     <FormMessage />
                     </FormItem>
                 )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button type="submit" size="lg" className="w-full !mt-6 h-14 rounded-full bg-[#A54A41] text-lg font-semibold text-white hover:bg-[#A54A41]/90 focus:ring-offset-background" disabled={isSubmitting}>
                     Send Reset Link
                 </Button>
             </form>
             </Form>
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-6 text-center text-sm text-white/80">
                 Remember your password?{' '}
-                <Link href="/auth/login" className="font-semibold text-primary hover:underline">
+                <Link href="/auth/login" className="font-semibold text-white hover:underline">
                     Login
                 </Link>
             </div>
