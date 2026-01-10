@@ -94,10 +94,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <Button variant="ghost" className="h-auto justify-start p-2" asChild>
             <Link href="/chat" className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="https://picsum.photos/seed/1/40/40" alt="ArisCBT" />
+                <AvatarImage src="/logo.png" alt="ArisCBT" data-ai-hint="logo" />
                 <AvatarFallback><Bot /></AvatarFallback>
               </Avatar>
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start group-data-[state=collapsed]:hidden">
                 <span className="font-headline text-lg font-bold">
                   ArisCBT
                 </span>
@@ -153,16 +153,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <AvatarImage
                   src={
                     user.isAnonymous
-                      ? "https://picsum.photos/seed/2/40/40"
-                      : user.photoURL || "https://picsum.photos/seed/2/40/40"
+                      ? "/user-avatar.png"
+                      : user.photoURL || "/user-avatar.png"
                   }
                   alt="User"
+                  data-ai-hint="person avatar"
                 />
                 <AvatarFallback>
                   <UserIcon />
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col items-start truncate">
+              <div className="flex flex-col items-start truncate group-data-[state=collapsed]:hidden">
                 <span className="truncate text-sm font-semibold">
                   {user.isAnonymous ? 'Guest User' : user.email}
                 </span>
@@ -170,7 +171,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="ml-auto"
+                className="ml-auto group-data-[state=collapsed]:hidden"
                 onClick={handleSignOut}
               >
                 <LogOut />
