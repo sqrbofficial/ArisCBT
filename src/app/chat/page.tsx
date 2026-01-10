@@ -10,11 +10,10 @@ import Link from 'next/link';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { useSidebar } from '@/components/ui/sidebar';
+import { useTransition, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { format, isToday, isWithinInterval, subDays } from 'date-fns';
 import AppShell from '@/components/layout/app-shell';
-import { useTransition } from 'react';
 
 type ChatSession = {
   id: string;
@@ -26,10 +25,16 @@ type ChatSession = {
 };
 
 export default function ChatHistoryPage() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
-  let [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, isUserLoading, router]);
 
   const chatsCollectionRef = useMemoFirebase(
     () => (user ? collection(firestore, 'users', user.uid, 'chats') : null),
@@ -60,6 +65,14 @@ export default function ChatHistoryPage() {
     // A cloud function would be needed for full cleanup.
     await deleteDoc(doc(firestore, 'users', user.uid, 'chats', chatId));
   };
+  
+  if (isUserLoading || !user) {
+    return (
+        <div className="flex h-dvh w-full items-center justify-center bg-background">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+    )
+  }
   
   const now = new Date();
   const todayChats = chats?.filter(chat => isToday(new Date(chat.createdAt.seconds * 1000))) ?? [];
