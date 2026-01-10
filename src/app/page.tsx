@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Bot } from 'lucide-react';
 
 export default function SplashPage() {
   return (
@@ -15,12 +14,12 @@ export default function SplashPage() {
       </div>
 
       <div className="z-10 flex flex-col items-center justify-center text-center">
-        <h1 className="flex items-center gap-2 text-5xl font-extrabold tracking-tight md:text-7xl">
+        <h1 className="font-russo-one text-5xl font-extrabold tracking-tight md:text-7xl">
           ArisCBT
         </h1>
       </div>
 
-      <div className="z-10 w-full flex-shrink-0 flex justify-center">
+      <div className="z-10 flex w-full flex-shrink-0 justify-center">
         <Button
           asChild
           size="lg"

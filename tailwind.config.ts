@@ -12,6 +12,7 @@ export default {
       fontFamily: {
         sans: ['var(--font-sans)', 'sans-serif'],
         headline: ['var(--font-sans)', 'sans-serif'],
+        'russo-one': ['var(--font-russo-one)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

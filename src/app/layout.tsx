@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { Inter } from "next/font/google";
-import AppShell from '@/components/layout/app-shell';
+import { Inter, Russo_One } from "next/font/google";
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const russoOne = Russo_One({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-russo-one',
+});
 
 export const metadata: Metadata = {
   title: 'ArisCBT',
@@ -20,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans antialiased ${inter.variable}`}>
+      <body className={`font-sans antialiased ${inter.variable} ${russoOne.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
