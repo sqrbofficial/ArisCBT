@@ -36,7 +36,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const menuItems = [
   {
-    href: '/',
+    href: '/chat',
     icon: MessageSquareText,
     label: 'Chat',
   },
@@ -87,28 +87,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     }
   };
 
-  if (isUserLoading) {
-    return (
-      <div className="flex h-dvh w-full items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    // If no user, show the children directly which should be the login/signup pages.
-    return <>{children}</>;
-  }
-
   const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
+  const arisAvatar = PlaceHolderImages.find(img => img.id === 'aris-avatar');
+
+  // AppShell is now only used for authenticated routes.
+  // The loading and auth checks can be simplified or handled by the page using the shell.
 
   return (
     <SidebarProvider>
       <Sidebar variant="floating">
         <SidebarHeader>
           <Button variant="ghost" className="h-auto justify-start p-2" asChild>
-            <Link href="/" className="flex items-center gap-2">
-              <Bot className="h-8 w-8" />
+            <Link href="/chat" className="flex items-center gap-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={arisAvatar?.imageUrl} alt="ArisCBT" />
+                <AvatarFallback><Bot /></AvatarFallback>
+              </Avatar>
               <div className="flex flex-col items-start">
                 <span className="font-headline text-lg font-bold">
                   ArisCBT
@@ -159,34 +153,36 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          <div className="flex items-center gap-2 p-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={
-                  user.isAnonymous
-                    ? userAvatar?.imageUrl
-                    : user.photoURL || userAvatar?.imageUrl
-                }
-                alt="User"
-              />
-              <AvatarFallback>
-                <UserIcon />
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col items-start truncate">
-              <span className="truncate text-sm font-semibold">
-                {user.isAnonymous ? 'Guest User' : user.email}
-              </span>
+          { user && 
+            <div className="flex items-center gap-2 p-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage
+                  src={
+                    user.isAnonymous
+                      ? userAvatar?.imageUrl
+                      : user.photoURL || userAvatar?.imageUrl
+                  }
+                  alt="User"
+                />
+                <AvatarFallback>
+                  <UserIcon />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col items-start truncate">
+                <span className="truncate text-sm font-semibold">
+                  {user.isAnonymous ? 'Guest User' : user.email}
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="ml-auto"
+                onClick={handleSignOut}
+              >
+                <LogOut />
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="ml-auto"
-              onClick={handleSignOut}
-            >
-              <LogOut />
-            </Button>
-          </div>
+          }
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="flex flex-col">
