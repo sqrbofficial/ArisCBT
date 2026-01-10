@@ -15,6 +15,12 @@ export type Message = {
   isTyping?: boolean;
 };
 
+export type ChatSession = {
+    id: string;
+    title: string;
+    createdAt: Timestamp;
+}
+
 export type CrisisInfo = {
   isCrisis: boolean;
   crisisMessage: string;

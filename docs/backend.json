@@ -34,6 +34,28 @@
         "createdAt"
       ]
     },
+    "ChatSession": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Chat Session",
+      "type": "object",
+      "description": "Represents a single chat session or conversation.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the chat session."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the chat session, often the first user message."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the session was created."
+        }
+      },
+      "required": ["id", "title", "createdAt"]
+    },
     "ChatMessage": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Chat Message",
@@ -77,7 +99,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user information, including country and creation timestamp.  Enforces path-based ownership for private user data.",
+          "description": "Stores user profile information.",
           "params": [
             {
               "name": "userId",
@@ -87,17 +109,41 @@
         }
       },
       {
-        "path": "/users/{userId}/messages/{messageId}",
+        "path": "/users/{userId}/chats/{chatId}",
+        "definition": {
+          "entityName": "ChatSession",
+          "schema": {
+            "$ref": "#/backend/entities/ChatSession"
+          },
+          "description": "Stores metadata for a user's individual chat sessions.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The UID of the user who owns these chat sessions."
+            },
+            {
+              "name": "chatId",
+              "description": "The unique ID for the chat session."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/chats/{chatId}/messages/{messageId}",
         "definition": {
           "entityName": "ChatMessage",
           "schema": {
             "$ref": "#/backend/entities/ChatMessage"
           },
-          "description": "Stores all chat messages for a specific user. Enforces that only the user can access their own messages.",
+          "description": "Stores all chat messages for a specific chat session.",
           "params": [
             {
               "name": "userId",
               "description": "The UID of the user who owns these messages."
+            },
+            {
+              "name": "chatId",
+              "description": "The ID of the chat session."
             },
             {
               "name": "messageId",
@@ -106,7 +152,6 @@
           ]
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to securely store user data, including their country, and to support the Aris AI Therapy application's core features. User data is stored under `/users/{userId}`. This approach ensures path-based ownership, granting each user control over their own data. This structure supports authorization independence because access control is determined solely by the user's `uid` in the path, eliminating the need for `get()` calls in security rules. Additionally, the homogeneous structure of the `users` collection simplifies security rule design and facilitates secure `list` operations, fulfilling the QAPs requirement. No membership maps are used because the data is exclusively private to each user. The `createdAt` timestamp is included for auditability and data management."
+    ]
   }
 }

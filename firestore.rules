@@ -98,31 +98,24 @@ service cloud.firestore {
      * @description Secures a user's private data document. Only the owner can
      *   access or modify their own document.
      * @path /users/{userId}
-     * @allow (get) A signed-in user (auth.uid='user123') reads their own document at
-     *   /users/user123.
-     * @deny (get) A signed-in user (auth.uid='user123') tries to read another
-     *   user's document at /users/user456.
-     * @principle Restricts access to a user's own data tree, ensuring privacy
-     *   and data isolation between users.
      */
     match /users/{userId} {
-      // READ: Only the document owner can read their own user data.
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-
-      // WRITE: A user can create their own document, update it, and delete it.
-      allow create: if isOwner(userId) && isCreatingValidUserDocument(userId);
-      allow update: if isExistingOwner(userId) && isUpdatingValidUserDocument();
-      allow delete: if isExistingOwner(userId);
+      allow get, list, create, update, delete: if isOwner(userId);
       
       /**
-       * @description Secures a user's chat messages. Only the owner can manage
-       *   their own chat history.
-       * @path /users/{userId}/messages/{messageId}
+       * @description Secures a user's chat sessions.
+       * @path /users/{userId}/chats/{chatId}
        */
-      match /messages/{messageId} {
-        // READ/WRITE/DELETE: Only the owner can manage their messages.
+      match /chats/{chatId} {
         allow read, write, delete: if isOwner(userId);
+        
+        /**
+         * @description Secures messages within a chat session.
+         * @path /users/{userId}/chats/{chatId}/messages/{messageId}
+         */
+        match /messages/{messageId} {
+          allow read, write, delete: if isOwner(userId);
+        }
       }
     }
   }

@@ -7,6 +7,7 @@ import {
   BarChart3,
   BookHeart,
   Bot,
+  Home,
   LogOut,
   MessageSquareText,
   Settings,
@@ -37,8 +38,8 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 const menuItems = [
   {
     href: '/chat',
-    icon: MessageSquareText,
-    label: 'Chat',
+    icon: Home,
+    label: 'Home',
   },
   {
     href: '/progress',
@@ -90,9 +91,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const userAvatar = PlaceHolderImages.find(img => img.id === 'user-avatar');
   const arisAvatar = PlaceHolderImages.find(img => img.id === 'aris-avatar');
 
-  // AppShell is now only used for authenticated routes.
-  // The loading and auth checks can be simplified or handled by the page using the shell.
-
   return (
     <SidebarProvider>
       <Sidebar variant="floating">
@@ -120,10 +118,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname === item.href}
+                  isActive={pathname.startsWith(item.href)}
                   className={cn(
                     'justify-start',
-                    pathname === item.href && 'font-bold'
+                     pathname.startsWith(item.href) && 'font-bold'
                   )}
                   tooltip={item.label}
                 >
@@ -186,9 +184,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="flex flex-col">
-        <header className="sticky top-0 z-10 flex h-12 items-center gap-2 border-b bg-background/50 px-4 backdrop-blur-sm">
-          <SidebarTrigger />
-        </header>
+        {/* The header from the new home screen design is not part of the shell.
+            Individual pages will now control their own headers. */}
         {children}
       </SidebarInset>
     </SidebarProvider>

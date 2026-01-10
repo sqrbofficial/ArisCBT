@@ -2,11 +2,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SendHorizonal, Menu, Mic, Speaker, Square } from "lucide-react";
+import { SendHorizonal, Mic, Square } from "lucide-react";
 import { useEffect, useRef, useState, useTransition, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { collection, query, orderBy, serverTimestamp, Timestamp } from "firebase/firestore";
+import { collection, query, orderBy, serverTimestamp, Timestamp, doc, updateDoc } from "firebase/firestore";
 
 import { handleUserMessage, handleTextToSpeech } from "@/app/chat/actions";
 import ChatMessage from "@/components/chat-message";
@@ -17,19 +17,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import type { CrisisInfo, Message } from "@/lib/types";
 import { Card, CardContent } from "./ui/card";
-import { useSidebar } from "./ui/sidebar";
 import { useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
 
 const formSchema = z.object({
   message: z.string().min(1, { message: "Message cannot be empty." }),
 });
-
-const initialMessage: Message = {
-  id: "0",
-  role: "ai",
-  text: "Hello. I'm here to provide a safe, non-judgmental space for you to explore your thoughts and feelings. What's on your mind today?",
-  createdAt: Timestamp.now(),
-};
 
 type PlainMessage = {
     id: string;
@@ -38,13 +30,17 @@ type PlainMessage = {
     createdAt: string; // ISO string
 };
 
-export default function ChatInterface() {
+interface ChatInterfaceProps {
+    chatId: string;
+}
+
+export default function ChatInterface({ chatId }: ChatInterfaceProps) {
   const { user } = useUser();
   const firestore = useFirestore();
 
   const messagesCollectionRef = useMemoFirebase(
-    () => (user ? collection(firestore, "users", user.uid, "messages") : null),
-    [user, firestore]
+    () => (user ? collection(firestore, "users", user.uid, "chats", chatId, "messages") : null),
+    [user, firestore, chatId]
   );
 
   const messagesQuery = useMemoFirebase(
@@ -57,7 +53,6 @@ export default function ChatInterface() {
   const [isPending, startTransition] = useTransition();
   const [crisisInfo, setCrisisInfo] = useState<CrisisInfo | null>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
-  const { setOpenMobile } = useSidebar();
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -71,7 +66,6 @@ export default function ChatInterface() {
   });
   
   useEffect(() => {
-    // Check for browser support
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       recognitionRef.current = new SpeechRecognition();
@@ -136,8 +130,13 @@ export default function ChatInterface() {
   
   const messages = useMemo(() => {
     const combined = [...(fetchedMessages || []), ...localMessages];
-    if (combined.length === 0 && !isLoadingMessages) {
-        return [initialMessage];
+     if (combined.length === 0 && !isLoadingMessages) {
+      return [{
+        id: "0",
+        role: "ai",
+        text: "Hello. I'm here to provide a safe, non-judgmental space for you to explore your thoughts and feelings. What's on your mind today?",
+        createdAt: Timestamp.now(),
+      }];
     }
     return combined;
   },[fetchedMessages, localMessages, isLoadingMessages]);
@@ -147,7 +146,7 @@ export default function ChatInterface() {
   }, [messages]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (!messagesCollectionRef) return;
+    if (!messagesCollectionRef || !user) return;
 
     const userMessage: Omit<Message, 'id' | 'createdAt'> = {
       role: "user",
@@ -155,6 +154,12 @@ export default function ChatInterface() {
     };
     
     addDocumentNonBlocking(messagesCollectionRef, { ...userMessage, createdAt: serverTimestamp() });
+
+    // If this is the first user message, update the chat session title
+    if (fetchedMessages?.length === 0) {
+        const chatDocRef = doc(firestore, 'users', user.uid, 'chats', chatId);
+        updateDoc(chatDocRef, { title: values.message });
+    }
     
     const typingMessage: Message = {
       id: crypto.randomUUID(),
@@ -203,7 +208,7 @@ export default function ChatInterface() {
       <div className="flex-1 w-full max-w-4xl overflow-hidden pt-4 md:pt-4">
         <ScrollArea className="h-full">
           <div className="space-y-8 p-4">
-             {isLoadingMessages && messages.length === 0 && (
+             {isLoadingMessages && messages.length <= 1 && (
               <div className="flex justify-center items-center h-full">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               </div>
