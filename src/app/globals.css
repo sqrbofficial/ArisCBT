@@ -64,7 +64,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 265 60% 10%;
+    --sidebar-background: transparent;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 24 94% 50%;
     --sidebar-primary-foreground: 0 0% 98%;
@@ -82,4 +82,10 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer components {
+    .bg-app-gradient {
+        @apply bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00];
+    }
 }
