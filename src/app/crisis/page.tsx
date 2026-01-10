@@ -15,6 +15,8 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { hotlines, HotlineResource } from '@/lib/hotlines';
 import { useMemo } from 'react';
+import AppShell from '@/components/layout/app-shell';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const internationalResources = [
   {
@@ -66,50 +68,55 @@ export default function CrisisPage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="flex items-center gap-2 font-headline text-3xl font-bold text-destructive">
-          Immediate Help <Siren className="h-7 w-7" />
-        </h1>
-        <p className="max-w-2xl text-muted-foreground">
-          If you are in crisis, you are not alone. Please use these resources to
-          get immediate, confidential help. Your safety is the priority.
-        </p>
-      </div>
-
-      {isLoading ? (
-         <div className="flex h-64 w-full items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    <AppShell>
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+        <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex items-center gap-4 self-start">
+                <SidebarTrigger className="md:hidden" />
+                <h1 className="flex items-center gap-2 font-headline text-3xl font-bold text-destructive">
+                Immediate Help <Siren className="h-7 w-7" />
+                </h1>
+            </div>
+          <p className="max-w-2xl text-muted-foreground">
+            If you are in crisis, you are not alone. Please use these resources to
+            get immediate, confidential help. Your safety is the priority.
+          </p>
         </div>
-      ) : (
-        <>
-          {userHotlines.length > 0 && (
-            <div className='lg:px-20 xl:px-40'>
+
+        {isLoading ? (
+          <div className="flex h-64 w-full items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          </div>
+        ) : (
+          <>
+            {userHotlines.length > 0 && (
+              <div className='lg:px-20 xl:px-40'>
+                <h2 className="mb-4 text-center font-headline text-2xl font-bold">
+                  Resources for {hotlines[userCountryCode!][0].countryName}
+                </h2>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {userHotlines.map((resource) => (
+                    <ResourceCard key={resource.title} resource={resource} icon={getIcon(resource.type)} />
+                  ))}
+                </div>
+                <hr className="my-8" />
+              </div>
+            )}
+            
+            <div className="lg:px-20 xl:px-40">
               <h2 className="mb-4 text-center font-headline text-2xl font-bold">
-                Resources for {hotlines[userCountryCode!][0].countryName}
+                  International Resources
               </h2>
               <div className="grid gap-6 md:grid-cols-2">
-                {userHotlines.map((resource) => (
-                  <ResourceCard key={resource.title} resource={resource} icon={getIcon(resource.type)} />
+                {internationalResources.map((resource) => (
+                  <ResourceCard key={resource.title} resource={resource} icon={resource.icon} />
                 ))}
               </div>
-              <hr className="my-8" />
             </div>
-          )}
-          
-          <div className="lg:px-20 xl:px-40">
-            <h2 className="mb-4 text-center font-headline text-2xl font-bold">
-                International Resources
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              {internationalResources.map((resource) => (
-                <ResourceCard key={resource.title} resource={resource} icon={resource.icon} />
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+    </AppShell>
   );
 }
 

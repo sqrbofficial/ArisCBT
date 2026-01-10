@@ -1,6 +1,8 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
+import AppShell from "@/components/layout/app-shell";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const resourceSections = [
     {
@@ -23,34 +25,39 @@ const resourceSections = [
 
 export default function ResourcesPage() {
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="flex items-center gap-2 font-headline text-3xl font-bold">
-          <BookOpen className="text-primary" /> Learning Resources
-        </h1>
-        <p className="max-w-2xl text-muted-foreground">
-          Expand your knowledge about CBT, mindfulness, and mental wellness.
-        </p>
-      </div>
+    <AppShell>
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+        <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex items-center gap-4 self-start">
+                <SidebarTrigger className="md:hidden" />
+                <h1 className="flex items-center gap-2 font-headline text-3xl font-bold">
+                    <BookOpen className="text-primary" /> Learning Resources
+                </h1>
+            </div>
+          <p className="max-w-2xl text-muted-foreground">
+            Expand your knowledge about CBT, mindfulness, and mental wellness.
+          </p>
+        </div>
 
-        <Card className="lg:mx-auto lg:max-w-4xl">
-            <CardHeader>
-                <CardTitle>Resource Library</CardTitle>
-                <CardDescription>Information to support your therapy journey.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Accordion type="single" collapsible className="w-full">
-                    {resourceSections.map((section, index) => (
-                        <AccordionItem value={`item-${index}`} key={index}>
-                            <AccordionTrigger className="text-lg">{section.title}</AccordionTrigger>
-                            <AccordionContent className="prose prose-stone dark:prose-invert max-w-none text-foreground/80 whitespace-pre-wrap">
-                                {section.content}
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </CardContent>
-        </Card>
-    </div>
+          <Card className="lg:mx-auto lg:max-w-4xl">
+              <CardHeader>
+                  <CardTitle>Resource Library</CardTitle>
+                  <CardDescription>Information to support your therapy journey.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                  <Accordion type="single" collapsible className="w-full">
+                      {resourceSections.map((section, index) => (
+                          <AccordionItem value={`item-${index}`} key={index}>
+                              <AccordionTrigger className="text-lg">{section.title}</AccordionTrigger>
+                              <AccordionContent className="prose prose-stone dark:prose-invert max-w-none text-foreground/80 whitespace-pre-wrap">
+                                  {section.content}
+                              </AccordionContent>
+                          </AccordionItem>
+                      ))}
+                  </Accordion>
+              </CardContent>
+          </Card>
+      </div>
+    </AppShell>
   );
 }
