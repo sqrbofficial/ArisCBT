@@ -20,11 +20,11 @@ export default function SplashPage() {
         </h1>
       </div>
 
-      <div className="z-10 w-full flex-shrink-0">
+      <div className="z-10 w-full flex-shrink-0 flex justify-center">
         <Button
           asChild
           size="lg"
-          className="w-full max-w-sm mx-auto rounded-full bg-[#A54A41] py-6 text-lg font-semibold text-white hover:bg-[#A54A41]/90 focus-visible:ring-white"
+          className="w-full max-w-sm rounded-full bg-[#A54A41] py-6 text-lg font-semibold text-white hover:bg-[#A54A41]/90 focus-visible:ring-white"
         >
           <Link href="/auth/login">Get Started</Link>
         </Button>
