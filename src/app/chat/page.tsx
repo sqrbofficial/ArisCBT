@@ -13,7 +13,6 @@ import { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { format, isToday, isWithinInterval, subDays } from 'date-fns';
 import AppShell from '@/components/layout/app-shell';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 
 type ChatSession = {
   id: string;
@@ -58,6 +57,16 @@ export default function ChatHistoryPage() {
     await deleteDoc(doc(firestore, 'users', user.uid, 'chats', chatId));
   };
   
+  const isLoading = isUserLoading || areChatsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
   const now = new Date();
   const todayChats = chats?.filter(chat => isToday(new Date(chat.createdAt.seconds * 1000))) ?? [];
   const last7DaysChats = chats?.filter(chat => {
@@ -69,21 +78,10 @@ export default function ChatHistoryPage() {
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
 
-  const isLoading = isUserLoading || areChatsLoading;
-
-  if (isLoading || !user) {
-    return (
-      <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
-
   return (
     <AppShell>
         <div className="flex h-full flex-col bg-app-gradient dark:bg-app-gradient-dark text-white">
             <header className="flex items-center justify-between p-4 flex-shrink-0">
-                <SidebarTrigger className="md:hidden" />
                 <h1 className="text-xl font-bold">ArisCBT</h1>
                 <Button variant="ghost" size="icon">
                     <MoreVertical />
