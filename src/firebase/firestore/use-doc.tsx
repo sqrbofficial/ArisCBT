@@ -37,7 +37,7 @@ export interface UseDocResult<T> {
  * @returns {UseDocResult<T>} Object with data, isLoading, error.
  */
 export function useDoc<T = any>(
-  docRef: DocumentReference<DocumentData> | null | undefined,
+  docRef: DocumentReference<DocumentData>,
   options?: { enabled?: boolean }
 ): UseDocResult<T> {
   const { enabled = true } = options || {};
@@ -48,7 +48,8 @@ export function useDoc<T = any>(
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-    if (!enabled || !docRef) {
+    // If not enabled, reset state and do nothing.
+    if (!enabled) {
       setData(null);
       setIsLoading(false);
       setError(null);
@@ -57,6 +58,13 @@ export function useDoc<T = any>(
 
     setIsLoading(true);
     setError(null);
+
+    // This check is now inside the effect, which is safe.
+    if (!docRef) {
+        setIsLoading(false);
+        setData(null);
+        return;
+    }
 
     const unsubscribe = onSnapshot(
       docRef,
@@ -83,6 +91,7 @@ export function useDoc<T = any>(
     );
 
     return () => unsubscribe();
+    // The dependency array now includes `enabled` to re-trigger the effect when it changes.
   }, [docRef, enabled]);
 
   return { data, isLoading, error };

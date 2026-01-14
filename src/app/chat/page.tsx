@@ -11,7 +11,7 @@ import { collection, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp } f
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
-import { format, isToday, isWithinInterval, subDays } from 'date-fns';
+import { isToday, isWithinInterval, subDays } from 'date-fns';
 import AppShell from '@/components/layout/app-shell';
 
 type ChatSession = {
@@ -99,11 +99,11 @@ export default function ChatHistoryPage() {
   return (
     <AppShell>
         {isLoading ? (
-            <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark dark:bg-app-gradient-dark">
+            <div className="flex h-dvh w-full items-center justify-center bg-app-gradient dark:bg-app-gradient-dark">
                 <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             </div>
         ) : (
-            <div className="flex h-full flex-col bg-app-gradient dark:bg-app-gradient-dark text-white">
+            <div className="flex h-full flex-col bg-app-gradient-dark dark:bg-app-gradient-dark text-white">
                 <header className="flex items-center justify-between p-4 flex-shrink-0">
                     <h1 className="text-xl font-bold">ArisCBT</h1>
                     <Button variant="ghost" size="icon">

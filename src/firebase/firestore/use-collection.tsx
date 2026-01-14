@@ -50,7 +50,7 @@ export interface InternalQuery extends Query<DocumentData> {
  * @returns {UseCollectionResult<T>} Object with data, isLoading, error.
  */
 export function useCollection<T = any>(
-    targetRefOrQuery: CollectionReference<DocumentData> | Query<DocumentData> | null | undefined,
+    targetRefOrQuery: CollectionReference<DocumentData> | Query<DocumentData>,
     options?: { enabled?: boolean }
 ): UseCollectionResult<T> {
   const { enabled = true } = options || {};
@@ -62,7 +62,8 @@ export function useCollection<T = any>(
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-    if (!enabled || !targetRefOrQuery) {
+    // If not enabled, reset state and do nothing.
+    if (!enabled) {
       setData(null);
       setIsLoading(false);
       setError(null);
@@ -71,6 +72,13 @@ export function useCollection<T = any>(
 
     setIsLoading(true);
     setError(null);
+
+    // This check is now inside the effect, which is safe.
+    if (!targetRefOrQuery) {
+        setIsLoading(false);
+        setData(null);
+        return;
+    }
 
     const unsubscribe = onSnapshot(
       targetRefOrQuery,
@@ -95,13 +103,14 @@ export function useCollection<T = any>(
         });
 
         setError(contextualError);
-        setData(null);
+setData(null);
         setIsLoading(false);
         errorEmitter.emit('permission-error', contextualError);
       }
     );
 
     return () => unsubscribe();
+    // The dependency array now includes `enabled` to re-trigger the effect when it changes.
   }, [targetRefOrQuery, enabled]);
 
   return { data, isLoading, error };

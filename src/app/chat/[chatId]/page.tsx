@@ -1,19 +1,18 @@
 'use client';
 
 import ChatInterface from "@/components/chat-interface";
-import { useUser, useFirestore } from "@/firebase";
+import { useUser } from "@/firebase";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, SidebarTrigger } from "lucide-react";
 import AppShell from "@/components/layout/app-shell";
 
 export default function ChatSessionPage() {
   const { user, isUserLoading } = useUser();
   const params = useParams();
-  const firestore = useFirestore();
 
   const chatId = params.chatId as string;
-  const isLoading = isUserLoading || !chatId;
+  const isLoading = isUserLoading || !chatId || !user;
 
   return (
     <AppShell>
@@ -24,7 +23,10 @@ export default function ChatSessionPage() {
       ) : (
         <div className="flex h-full flex-col bg-app-gradient-dark dark:bg-app-gradient-dark text-white">
           <header className="flex items-center justify-between p-4 flex-shrink-0">
-              <h1 className="text-xl font-bold">ArisCBT</h1>
+              <div className="flex items-center gap-4">
+                 <SidebarTrigger className="md:hidden" />
+                 <h1 className="text-xl font-bold">ArisCBT</h1>
+              </div>
               <Button variant="ghost" size="icon">
                   <MoreVertical />
               </Button>

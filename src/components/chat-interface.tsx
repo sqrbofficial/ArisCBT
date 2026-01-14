@@ -16,7 +16,6 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import type { CrisisInfo, Message } from "@/lib/types";
-import { Card, CardContent } from "./ui/card";
 import { useCollection, useFirestore, useUser, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
 
 const formSchema = z.object({
