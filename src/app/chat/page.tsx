@@ -89,17 +89,6 @@ export default function ChatHistoryPage() {
   
   const isLoading = isUserLoading || areChatsLoading;
 
-  // Conditional rendering happens only in the return statement.
-  if (isLoading) {
-    return (
-      <AppShell>
-        <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
-      </AppShell>
-    );
-  }
-
   const now = new Date();
   const todayChats = chats?.filter(chat => isToday(new Date(chat.createdAt.seconds * 1000))) ?? [];
   const last7DaysChats = chats?.filter(chat => {
@@ -111,48 +100,55 @@ export default function ChatHistoryPage() {
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
 
+  // Conditional rendering happens only in the return statement.
   return (
     <AppShell>
-        <div className="flex h-full flex-col bg-app-gradient dark:bg-app-gradient-dark text-white">
-            <header className="flex items-center justify-between p-4 flex-shrink-0">
-                <h1 className="text-xl font-bold">ArisCBT</h1>
-                <Button variant="ghost" size="icon">
-                    <MoreVertical />
-                </Button>
-            </header>
-
-            <main className="flex-1 overflow-y-auto p-4">
-                <section className="mb-8">
-                    <h2 className="text-lg font-semibold mb-4">New Chats</h2>
-                    <Button 
-                        className="w-full h-14 rounded-xl text-lg font-semibold bg-primary hover:bg-primary/90"
-                        onClick={handleCreateNewChat}
-                        disabled={isPending}
-                    >
-                        {isPending ? 'Creating...' : 'Create New Chats'}
+        {isLoading ? (
+            <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark dark:bg-app-gradient-dark">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            </div>
+        ) : (
+            <div className="flex h-full flex-col bg-app-gradient dark:bg-app-gradient-dark text-white">
+                <header className="flex items-center justify-between p-4 flex-shrink-0">
+                    <h1 className="text-xl font-bold">ArisCBT</h1>
+                    <Button variant="ghost" size="icon">
+                        <MoreVertical />
                     </Button>
-                </section>
+                </header>
 
-                <section>
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg font-semibold">Chats History</h2>
-                        <Link href="#" className="text-sm font-medium hover:underline">See More</Link>
-                    </div>
+                <main className="flex-1 overflow-y-auto p-4">
+                    <section className="mb-8">
+                        <h2 className="text-lg font-semibold mb-4">New Chats</h2>
+                        <Button 
+                            className="w-full h-14 rounded-xl text-lg font-semibold bg-primary hover:bg-primary/90"
+                            onClick={handleCreateNewChat}
+                            disabled={isPending}
+                        >
+                            {isPending ? 'Creating...' : 'Create New Chats'}
+                        </Button>
+                    </section>
 
-                    <div className="space-y-6">
-                        {chats && chats.length > 0 ? (
-                            <>
-                                {todayChats.length > 0 && <ChatGroup title="Today" chats={todayChats} onDelete={handleDeleteChat} />}
-                                {last7DaysChats.length > 0 && <ChatGroup title="Last 7 Days" chats={last7DaysChats} onDelete={handleDeleteChat} />}
-                                {olderChats.length > 0 && <ChatGroup title="Older" chats={olderChats} onDelete={handleDeleteChat} />}
-                            </>
-                        ) : (
-                            <div className="text-center p-4 text-white/80">No chat history yet. Start a new conversation!</div>
-                        )}
-                    </div>
-                </section>
-            </main>
-        </div>
+                    <section>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold">Chats History</h2>
+                            <Link href="#" className="text-sm font-medium hover:underline">See More</Link>
+                        </div>
+
+                        <div className="space-y-6">
+                            {chats && chats.length > 0 ? (
+                                <>
+                                    {todayChats.length > 0 && <ChatGroup title="Today" chats={todayChats} onDelete={handleDeleteChat} />}
+                                    {last7DaysChats.length > 0 && <ChatGroup title="Last 7 Days" chats={last7DaysChats} onDelete={handleDeleteChat} />}
+                                    {olderChats.length > 0 && <ChatGroup title="Older" chats={olderChats} onDelete={handleDeleteChat} />}
+                                </>
+                            ) : (
+                                <div className="text-center p-4 text-white/80">No chat history yet. Start a new conversation!</div>
+                            )}
+                        </div>
+                    </section>
+                </main>
+            </div>
+        )}
     </AppShell>
   );
 }
