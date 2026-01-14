@@ -63,7 +63,7 @@ export async function handleUserMessage(
       userInput: message,
       sessionHistory,
     });
-    aiResponse = result.socraticQuestion;
+    aiResponse = result.aiResponse;
   }
 
   return {
