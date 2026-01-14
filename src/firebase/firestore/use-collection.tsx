@@ -69,6 +69,11 @@ export function useCollection<T = any>(
       return;
     }
 
+    // A non-memoized query can cause infinite loops. This is a development-time check.
+    if (process.env.NODE_ENV === 'development' && !memoizedTargetRefOrQuery.__memo) {
+        console.warn('The query/reference passed to useCollection was not created with useMemoFirebase. This can lead to performance issues and infinite loops.', memoizedTargetRefOrQuery);
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -107,8 +112,6 @@ export function useCollection<T = any>(
 
     return () => unsubscribe();
   }, [memoizedTargetRefOrQuery]); // Re-run if the target query/reference changes.
-  if(memoizedTargetRefOrQuery && !memoizedTargetRefOrQuery.__memo) {
-    throw new Error(memoizedTargetRefOrQuery + ' was not properly memoized using useMemoFirebase');
-  }
+
   return { data, isLoading, error };
 }
