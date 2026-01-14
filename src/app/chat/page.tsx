@@ -23,7 +23,35 @@ type ChatSession = {
   };
 };
 
+const ChatGroup = ({ title, chats, onDelete }: ChatGroupProps) => {
+    return (
+        <div>
+            <h3 className="text-md font-semibold mb-3">{title}</h3>
+            <div className="space-y-2">
+                {chats.map(chat => (
+                    <div key={chat.id} className="flex items-center justify-between rounded-xl bg-black/30 p-4">
+                        <Link href={`/chat/${chat.id}`} className="flex items-center gap-4 truncate">
+                            <MessageSquareText className="h-5 w-5 flex-shrink-0" />
+                            <span className="truncate">{chat.title}</span>
+                        </Link>
+                        <Button variant="ghost" size="icon" onClick={() => onDelete(chat.id)} className="text-red-500 hover:text-red-500/80">
+                            <Trash2 className="h-5 w-5" />
+                        </Button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+type ChatGroupProps = {
+    title: string;
+    chats: ChatSession[];
+    onDelete: (chatId: string) => void;
+}
+
 export default function ChatHistoryPage() {
+  // All hooks are called unconditionally at the top.
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
@@ -41,6 +69,7 @@ export default function ChatHistoryPage() {
   
   const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery);
 
+  // Event handlers are defined after all hooks.
   const handleCreateNewChat = () => {
     startTransition(async () => {
         if (!chatsCollectionRef) return;
@@ -60,6 +89,17 @@ export default function ChatHistoryPage() {
   
   const isLoading = isUserLoading || areChatsLoading;
 
+  // Conditional rendering happens only in the return statement.
+  if (isLoading) {
+    return (
+      <AppShell>
+        <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </AppShell>
+    );
+  }
+
   const now = new Date();
   const todayChats = chats?.filter(chat => isToday(new Date(chat.createdAt.seconds * 1000))) ?? [];
   const last7DaysChats = chats?.filter(chat => {
@@ -70,16 +110,6 @@ export default function ChatHistoryPage() {
       const chatDate = new Date(chat.createdAt.seconds * 1000);
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
-
-  if (isLoading) {
-    return (
-      <AppShell>
-        <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
-      </AppShell>
-    );
-  }
 
   return (
     <AppShell>
@@ -125,31 +155,4 @@ export default function ChatHistoryPage() {
         </div>
     </AppShell>
   );
-}
-
-type ChatGroupProps = {
-    title: string;
-    chats: ChatSession[];
-    onDelete: (chatId: string) => void;
-}
-
-const ChatGroup = ({ title, chats, onDelete }: ChatGroupProps) => {
-    return (
-        <div>
-            <h3 className="text-md font-semibold mb-3">{title}</h3>
-            <div className="space-y-2">
-                {chats.map(chat => (
-                    <div key={chat.id} className="flex items-center justify-between rounded-xl bg-black/30 p-4">
-                        <Link href={`/chat/${chat.id}`} className="flex items-center gap-4 truncate">
-                            <MessageSquareText className="h-5 w-5 flex-shrink-0" />
-                            <span className="truncate">{chat.title}</span>
-                        </Link>
-                        <Button variant="ghost" size="icon" onClick={() => onDelete(chat.id)} className="text-red-500 hover:text-red-500/80">
-                            <Trash2 className="h-5 w-5" />
-                        </Button>
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
 }
