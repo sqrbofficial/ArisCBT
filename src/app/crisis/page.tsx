@@ -69,7 +69,7 @@ export default function CrisisPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 bg-app-gradient text-white">
         <div className="flex flex-col items-center gap-2 text-center">
             <div className="flex items-center gap-4 self-start">
                 <SidebarTrigger className="md:hidden" />

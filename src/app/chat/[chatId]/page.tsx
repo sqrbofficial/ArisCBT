@@ -31,7 +31,7 @@ export default function ChatSessionPage() {
 
   return (
     <AppShell>
-       <div className="flex h-full flex-col bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] text-white">
+       <div className="flex h-full flex-col bg-app-gradient text-white">
         <header className="flex items-center justify-between p-4 flex-shrink-0">
             <SidebarTrigger className="md:hidden" />
             <h1 className="text-xl font-bold">ArisCBT</h1>

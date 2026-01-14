@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export default function SplashPage() {
   return (
-    <div className="relative flex h-dvh flex-col items-center justify-between bg-gradient-to-b from-[#2A2A72] via-[#A83279] to-[#F85F00] p-8 text-white">
+    <div className="relative flex h-dvh flex-col items-center justify-between bg-app-gradient p-8 text-white">
       <div className="absolute inset-0 bg-black/20" />
       
       <div className="z-10 w-full flex-shrink-0">
