@@ -54,18 +54,11 @@ export default function ChatHistoryPage() {
 
   const handleDeleteChat = async (chatId: string) => {
     if (!user) return;
-    await deleteDoc(doc(firestore, 'users', user.uid, 'chats', chatId));
+    const chatDocRef = doc(firestore, 'users', user.uid, 'chats', chatId);
+    await deleteDoc(chatDocRef);
   };
   
   const isLoading = isUserLoading || areChatsLoading;
-
-  if (isLoading) {
-    return (
-      <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
 
   const now = new Date();
   const todayChats = chats?.filter(chat => isToday(new Date(chat.createdAt.seconds * 1000))) ?? [];
@@ -77,6 +70,16 @@ export default function ChatHistoryPage() {
       const chatDate = new Date(chat.createdAt.seconds * 1000);
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
+
+  if (isLoading) {
+    return (
+      <AppShell>
+        <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell>
@@ -106,15 +109,17 @@ export default function ChatHistoryPage() {
                         <Link href="#" className="text-sm font-medium hover:underline">See More</Link>
                     </div>
 
-                    {areChatsLoading ? (
-                        <div className="text-center p-4">Loading chats...</div>
-                    ) : (
-                        <div className="space-y-6">
-                            {todayChats.length > 0 && <ChatGroup title="Today" chats={todayChats} onDelete={handleDeleteChat} />}
-                            {last7DaysChats.length > 0 && <ChatGroup title="7 Days" chats={last7DaysChats} onDelete={handleDeleteChat} />}
-                            {olderChats.length > 0 && <ChatGroup title="30 Days" chats={olderChats} onDelete={handleDeleteChat} />}
-                        </div>
-                    )}
+                    <div className="space-y-6">
+                        {chats && chats.length > 0 ? (
+                            <>
+                                {todayChats.length > 0 && <ChatGroup title="Today" chats={todayChats} onDelete={handleDeleteChat} />}
+                                {last7DaysChats.length > 0 && <ChatGroup title="Last 7 Days" chats={last7DaysChats} onDelete={handleDeleteChat} />}
+                                {olderChats.length > 0 && <ChatGroup title="Older" chats={olderChats} onDelete={handleDeleteChat} />}
+                            </>
+                        ) : (
+                            <div className="text-center p-4 text-white/80">No chat history yet. Start a new conversation!</div>
+                        )}
+                    </div>
                 </section>
             </main>
         </div>
