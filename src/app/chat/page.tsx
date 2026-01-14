@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  MessageSquareText,
-  MoreVertical,
-  Trash2,
-} from 'lucide-react';
+import { MessageSquareText, MoreVertical, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -24,56 +20,54 @@ type ChatSession = {
 };
 
 const ChatGroup = ({ title, chats, onDelete }: ChatGroupProps) => {
-    return (
-        <div>
-            <h3 className="text-md font-semibold mb-3">{title}</h3>
-            <div className="space-y-2">
-                {chats.map(chat => (
-                    <div key={chat.id} className="flex items-center justify-between rounded-xl bg-black/30 p-4">
-                        <Link href={`/chat/${chat.id}`} className="flex items-center gap-4 truncate">
-                            <MessageSquareText className="h-5 w-5 flex-shrink-0" />
-                            <span className="truncate">{chat.title}</span>
-                        </Link>
-                        <Button variant="ghost" size="icon" onClick={() => onDelete(chat.id)} className="text-red-500 hover:text-red-500/80">
-                            <Trash2 className="h-5 w-5" />
-                        </Button>
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
-}
+  return (
+    <div>
+      <h3 className="text-md font-semibold mb-3">{title}</h3>
+      <div className="space-y-2">
+        {chats.map(chat => (
+          <div key={chat.id} className="flex items-center justify-between rounded-xl bg-black/30 p-4">
+            <Link href={`/chat/${chat.id}`} className="flex items-center gap-4 truncate">
+              <MessageSquareText className="h-5 w-5 flex-shrink-0" />
+              <span className="truncate">{chat.title}</span>
+            </Link>
+            <Button variant="ghost" size="icon" onClick={() => onDelete(chat.id)} className="text-red-500 hover:text-red-500/80">
+              <Trash2 className="h-5 w-5" />
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 type ChatGroupProps = {
-    title: string;
-    chats: ChatSession[];
-    onDelete: (chatId: string) => void;
-}
+  title: string;
+  chats: ChatSession[];
+  onDelete: (chatId: string) => void;
+};
 
-export default function ChatHistoryPage() {
-  const { user, isUserLoading } = useUser();
+function ChatHistoryClientPage() {
+  const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  // This query will now use a dummy UID if the user is not yet available,
-  // but the hook will not execute thanks to the `enabled` flag.
   const chatsQuery = useMemoFirebase(
-    () => query(collection(firestore, 'users', user?.uid || '__dummy__', 'chats'), orderBy('createdAt', 'desc')),
-    [firestore, user?.uid]
+    () => query(collection(firestore, 'users', user!.uid, 'chats'), orderBy('createdAt', 'desc')),
+    [firestore, user]
   );
   
-  const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery, { enabled: !!user });
+  const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery);
 
   const handleCreateNewChat = () => {
     if (!user) return;
     const chatsCollectionRef = collection(firestore, 'users', user.uid, 'chats');
     startTransition(async () => {
-        const newChatDoc = await addDoc(chatsCollectionRef, {
-            title: 'New Chat',
-            createdAt: serverTimestamp(),
-        });
-        router.push(`/chat/${newChatDoc.id}`);
+      const newChatDoc = await addDoc(chatsCollectionRef, {
+        title: 'New Chat',
+        createdAt: serverTimestamp(),
+      });
+      router.push(`/chat/${newChatDoc.id}`);
     });
   };
 
@@ -83,67 +77,80 @@ export default function ChatHistoryPage() {
     await deleteDoc(chatDocRef);
   };
   
-  const isLoading = isUserLoading || (!!user && areChatsLoading);
-
   const now = new Date();
   const todayChats = chats?.filter(chat => isToday(new Date(chat.createdAt.seconds * 1000))) ?? [];
   const last7DaysChats = chats?.filter(chat => {
-      const chatDate = new Date(chat.createdAt.seconds * 1000);
-      return !isToday(chatDate) && isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
+    const chatDate = new Date(chat.createdAt.seconds * 1000);
+    return !isToday(chatDate) && isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
-   const olderChats = chats?.filter(chat => {
-      const chatDate = new Date(chat.createdAt.seconds * 1000);
-      return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
+  const olderChats = chats?.filter(chat => {
+    const chatDate = new Date(chat.createdAt.seconds * 1000);
+    return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
 
   return (
     <AppShell>
-        {isLoading ? (
-            <div className="flex h-dvh w-full items-center justify-center bg-app-gradient dark:bg-app-gradient-dark">
-                <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="flex h-full flex-col bg-app-gradient-dark dark:bg-app-gradient-dark text-white">
+        <header className="flex items-center justify-between p-4 flex-shrink-0">
+          <h1 className="text-xl font-bold">ArisCBT</h1>
+          <Button variant="ghost" size="icon">
+            <MoreVertical />
+          </Button>
+        </header>
+
+        <main className="flex-1 overflow-y-auto p-4">
+          <section className="mb-8">
+            <h2 className="text-lg font-semibold mb-4">New Chats</h2>
+            <Button 
+              className="w-full h-14 rounded-xl text-lg font-semibold bg-primary hover:bg-primary/90"
+              onClick={handleCreateNewChat}
+              disabled={isPending || !user}
+            >
+              {isPending ? 'Creating...' : 'Create New Chats'}
+            </Button>
+          </section>
+
+          <section>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Chats History</h2>
+              <Link href="#" className="text-sm font-medium hover:underline">See More</Link>
             </div>
-        ) : (
-            <div className="flex h-full flex-col bg-app-gradient-dark dark:bg-app-gradient-dark text-white">
-                <header className="flex items-center justify-between p-4 flex-shrink-0">
-                    <h1 className="text-xl font-bold">ArisCBT</h1>
-                    <Button variant="ghost" size="icon">
-                        <MoreVertical />
-                    </Button>
-                </header>
-
-                <main className="flex-1 overflow-y-auto p-4">
-                    <section className="mb-8">
-                        <h2 className="text-lg font-semibold mb-4">New Chats</h2>
-                        <Button 
-                            className="w-full h-14 rounded-xl text-lg font-semibold bg-primary hover:bg-primary/90"
-                            onClick={handleCreateNewChat}
-                            disabled={isPending || !user}
-                        >
-                            {isPending ? 'Creating...' : 'Create New Chats'}
-                        </Button>
-                    </section>
-
-                    <section>
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold">Chats History</h2>
-                            <Link href="#" className="text-sm font-medium hover:underline">See More</Link>
-                        </div>
-
-                        <div className="space-y-6">
-                            {chats && chats.length > 0 ? (
-                                <>
-                                    {todayChats.length > 0 && <ChatGroup title="Today" chats={todayChats} onDelete={handleDeleteChat} />}
-                                    {last7DaysChats.length > 0 && <ChatGroup title="Last 7 Days" chats={last7DaysChats} onDelete={handleDeleteChat} />}
-                                    {olderChats.length > 0 && <ChatGroup title="Older" chats={olderChats} onDelete={handleDeleteChat} />}
-                                </>
-                            ) : (
-                                <div className="text-center p-4 text-white/80">No chat history yet. Start a new conversation!</div>
-                            )}
-                        </div>
-                    </section>
-                </main>
-            </div>
-        )}
+            {areChatsLoading ? (
+              <div className="flex justify-center p-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {chats && chats.length > 0 ? (
+                  <>
+                    {todayChats.length > 0 && <ChatGroup title="Today" chats={todayChats} onDelete={handleDeleteChat} />}
+                    {last7DaysChats.length > 0 && <ChatGroup title="Last 7 Days" chats={last7DaysChats} onDelete={handleDeleteChat} />}
+                    {olderChats.length > 0 && <ChatGroup title="Older" chats={olderChats} onDelete={handleDeleteChat} />}
+                  </>
+                ) : (
+                  <div className="text-center p-4 text-white/80">No chat history yet. Start a new conversation!</div>
+                )}
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
     </AppShell>
   );
+}
+
+export default function ChatHistoryPage() {
+  const { user, isUserLoading } = useUser();
+
+  if (isUserLoading || !user) {
+    return (
+      <AppShell>
+        <div className="flex h-dvh w-full items-center justify-center bg-app-gradient dark:bg-app-gradient-dark">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </AppShell>
+    );
+  }
+
+  return <ChatHistoryClientPage />;
 }
