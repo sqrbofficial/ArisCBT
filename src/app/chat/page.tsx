@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, deleteDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { useTransition, useEffect } from 'react';
+import { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { format, isToday, isWithinInterval, subDays } from 'date-fns';
 import AppShell from '@/components/layout/app-shell';
@@ -24,7 +24,7 @@ type ChatSession = {
   };
 };
 
-function ChatHistoryPageContents() {
+export default function ChatHistoryPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
@@ -68,6 +68,14 @@ function ChatHistoryPageContents() {
       const chatDate = new Date(chat.createdAt.seconds * 1000);
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
+
+  if (isLoading || !user) {
+    return (
+      <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <AppShell>
@@ -113,29 +121,6 @@ function ChatHistoryPageContents() {
     </AppShell>
   );
 }
-
-
-export default function ChatHistoryPage() {
-  const { user, isUserLoading } = useUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/auth/login');
-    }
-  }, [user, isUserLoading, router]);
-
-  if (isUserLoading || !user) {
-    return (
-        <div className="flex h-dvh w-full items-center justify-center bg-background">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
-    )
-  }
-
-  return <ChatHistoryPageContents />;
-}
-
 
 type ChatGroupProps = {
     title: string;
