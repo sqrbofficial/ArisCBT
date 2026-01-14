@@ -24,8 +24,8 @@ type ChatSession = {
   };
 };
 
-export default function ChatHistoryPage() {
-  const { user, isUserLoading } = useUser();
+function ChatHistoryPageContents() {
+  const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -41,12 +41,6 @@ export default function ChatHistoryPage() {
   );
   
   const { data: chats, isLoading } = useCollection<ChatSession>(chatsQuery);
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/auth/login');
-    }
-  }, [user, isUserLoading, router]);
 
   const handleCreateNewChat = () => {
     startTransition(async () => {
@@ -64,14 +58,6 @@ export default function ChatHistoryPage() {
     await deleteDoc(doc(firestore, 'users', user.uid, 'chats', chatId));
   };
   
-  if (isUserLoading || !user) {
-    return (
-        <div className="flex h-dvh w-full items-center justify-center bg-background">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
-    )
-  }
-  
   const now = new Date();
   const todayChats = chats?.filter(chat => isToday(new Date(chat.createdAt.seconds * 1000))) ?? [];
   const last7DaysChats = chats?.filter(chat => {
@@ -83,12 +69,11 @@ export default function ChatHistoryPage() {
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
 
-
   return (
     <AppShell>
-        <div className="flex h-full flex-col bg-app-gradient text-white">
+        <div className="flex h-full flex-col bg-app-gradient dark:bg-app-gradient-dark text-white">
             <header className="flex items-center justify-between p-4 flex-shrink-0">
-                <SidebarTrigger />
+                <SidebarTrigger className="md:hidden" />
                 <h1 className="text-xl font-bold">ArisCBT</h1>
                 <Button variant="ghost" size="icon">
                     <MoreVertical />
@@ -99,7 +84,7 @@ export default function ChatHistoryPage() {
                 <section className="mb-8">
                     <h2 className="text-lg font-semibold mb-4">New Chats</h2>
                     <Button 
-                        className="w-full h-14 rounded-xl text-lg font-semibold"
+                        className="w-full h-14 rounded-xl text-lg font-semibold bg-primary hover:bg-primary/90"
                         onClick={handleCreateNewChat}
                         disabled={isPending}
                     >
@@ -127,6 +112,28 @@ export default function ChatHistoryPage() {
         </div>
     </AppShell>
   );
+}
+
+
+export default function ChatHistoryPage() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading || !user) {
+    return (
+        <div className="flex h-dvh w-full items-center justify-center bg-background">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+    )
+  }
+
+  return <ChatHistoryPageContents />;
 }
 
 
