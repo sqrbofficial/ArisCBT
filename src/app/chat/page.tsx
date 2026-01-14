@@ -9,6 +9,7 @@ import { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { isToday, isWithinInterval, subDays } from 'date-fns';
 import AppShell from '@/components/layout/app-shell';
+import type { User } from 'firebase/auth';
 
 type ChatSession = {
   id: string;
@@ -46,21 +47,20 @@ type ChatGroupProps = {
   onDelete: (chatId: string) => void;
 };
 
-function ChatHistoryClientPage() {
-  const { user } = useUser();
+// This component now receives the user object as a prop
+function ChatHistoryClientPage({ user }: { user: User }) {
   const firestore = useFirestore();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const chatsQuery = useMemoFirebase(
-    () => query(collection(firestore, 'users', user!.uid, 'chats'), orderBy('createdAt', 'desc')),
+    () => query(collection(firestore, 'users', user.uid, 'chats'), orderBy('createdAt', 'desc')),
     [firestore, user]
   );
   
   const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery);
 
   const handleCreateNewChat = () => {
-    if (!user) return;
     const chatsCollectionRef = collection(firestore, 'users', user.uid, 'chats');
     startTransition(async () => {
       const newChatDoc = await addDoc(chatsCollectionRef, {
@@ -72,7 +72,6 @@ function ChatHistoryClientPage() {
   };
 
   const handleDeleteChat = async (chatId: string) => {
-    if (!user) return;
     const chatDocRef = doc(firestore, 'users', user.uid, 'chats', chatId);
     await deleteDoc(chatDocRef);
   };
@@ -104,7 +103,7 @@ function ChatHistoryClientPage() {
             <Button 
               className="w-full h-14 rounded-xl text-lg font-semibold bg-primary hover:bg-primary/90"
               onClick={handleCreateNewChat}
-              disabled={isPending || !user}
+              disabled={isPending}
             >
               {isPending ? 'Creating...' : 'Create New Chats'}
             </Button>
@@ -139,6 +138,7 @@ function ChatHistoryClientPage() {
   );
 }
 
+// This is the main component that handles loading and auth state.
 export default function ChatHistoryPage() {
   const { user, isUserLoading } = useUser();
 
@@ -152,5 +152,6 @@ export default function ChatHistoryPage() {
     );
   }
 
-  return <ChatHistoryClientPage />;
+  // Once the user is loaded, render the client page with the user prop.
+  return <ChatHistoryClientPage user={user} />;
 }
