@@ -12,27 +12,26 @@ export default function ChatSessionPage() {
   const { user, isUserLoading } = useUser();
   const params = useParams();
   const chatId = params.chatId as string;
-
-  if (isUserLoading || !user || !chatId) {
-    return (
-        <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
-    )
-  }
+  const isLoading = isUserLoading || !user || !chatId;
 
   return (
     <AppShell>
-       <div className="flex h-full flex-col bg-app-gradient dark:bg-app-gradient-dark text-white">
-        <header className="flex items-center justify-between p-4 flex-shrink-0">
-            <SidebarTrigger className="md:hidden" />
-            <h1 className="text-xl font-bold">ArisCBT</h1>
-            <Button variant="ghost" size="icon">
-                <MoreVertical />
-            </Button>
-        </header>
-        <ChatInterface chatId={chatId} />
-      </div>
+      {isLoading ? (
+        <div className="flex h-dvh w-full items-center justify-center bg-app-gradient-dark">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      ) : (
+        <div className="flex h-full flex-col bg-app-gradient-dark text-white">
+          <header className="flex items-center justify-between p-4 flex-shrink-0">
+              <SidebarTrigger className="md:hidden" />
+              <h1 className="text-xl font-bold">ArisCBT</h1>
+              <Button variant="ghost" size="icon">
+                  <MoreVertical />
+              </Button>
+          </header>
+          <ChatInterface chatId={chatId} />
+        </div>
+      )}
     </AppShell>
   );
 }
