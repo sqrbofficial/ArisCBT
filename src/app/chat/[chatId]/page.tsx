@@ -4,8 +4,9 @@ import ChatInterface from "@/components/chat-interface";
 import { useUser } from "@/firebase";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, SidebarTrigger } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import AppShell from "@/components/layout/app-shell";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function ChatSessionPage() {
   const { user, isUserLoading } = useUser();
