@@ -51,7 +51,7 @@ type ChatGroupProps = {
 }
 
 export default function ChatHistoryPage() {
-  // All hooks are called unconditionally at the top.
+  // All hooks are called unconditionally at the top of the component.
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
@@ -69,7 +69,7 @@ export default function ChatHistoryPage() {
   
   const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery);
 
-  // Event handlers are defined after all hooks.
+  // Logic and event handlers are defined after all hooks.
   const handleCreateNewChat = () => {
     startTransition(async () => {
         if (!chatsCollectionRef) return;
@@ -100,7 +100,7 @@ export default function ChatHistoryPage() {
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
 
-  // Conditional rendering happens only in the return statement.
+  // Conditional rendering only happens inside the return statement.
   return (
     <AppShell>
         {isLoading ? (
