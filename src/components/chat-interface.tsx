@@ -38,17 +38,18 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const messagesCollectionRef = useMemoFirebase(
-    () => (user ? collection(firestore, "users", user.uid, "chats", chatId, "messages") : null),
+  const messagesQuery = useMemoFirebase(
+    () => {
+      // This query now depends on user and chatId, but will only be executed by the hook when enabled.
+      // A dummy path is used if data is missing to prevent crashes.
+      const path = user ? `users/${user.uid}/chats/${chatId}/messages` : 'dummy_path';
+      return query(collection(firestore, path), orderBy("createdAt", "asc"));
+    },
     [user, firestore, chatId]
   );
-
-  const messagesQuery = useMemoFirebase(
-    () => (messagesCollectionRef ? query(messagesCollectionRef, orderBy("createdAt", "asc")) : null),
-    [messagesCollectionRef]
-  );
   
-  const { data: fetchedMessages, isLoading: isLoadingMessages } = useCollection<Message>(messagesQuery);
+  // The hook is now controlled by the `enabled` flag.
+  const { data: fetchedMessages, isLoading: isLoadingMessages } = useCollection<Message>(messagesQuery, { enabled: !!user && !!chatId });
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const [isPending, startTransition] = useTransition();
   const [crisisInfo, setCrisisInfo] = useState<CrisisInfo | null>(null);
@@ -146,7 +147,9 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
   }, [messages]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (!messagesCollectionRef || !user) return;
+    if (!user) return;
+    const messagesCollectionRef = collection(firestore, "users", user.uid, "chats", chatId, "messages");
+
 
     const userMessage: Omit<Message, 'id' | 'createdAt'> = {
       role: "user",

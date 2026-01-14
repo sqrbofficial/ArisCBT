@@ -42,11 +42,11 @@ export default function CrisisPage() {
   const firestore = useFirestore();
 
   const userDocRef = useMemoFirebase(
-    () => (user ? doc(firestore, 'users', user.uid) : null),
-    [user, firestore]
+    () => doc(firestore, 'users', user?.uid || '__dummy__'),
+    [user?.uid, firestore]
   );
   
-  const { data: userData, isLoading: isUserDataLoading } = useDoc<{ country: string }>(userDocRef);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc<{ country: string }>(userDocRef, { enabled: !!user });
 
   const userCountryCode = userData?.country;
 
@@ -57,7 +57,7 @@ export default function CrisisPage() {
     return hotlines[userCountryCode];
   }, [userCountryCode]);
 
-  const isLoading = isUserLoading || isUserDataLoading;
+  const isLoading = isUserLoading || (!!user && isUserDataLoading);
 
   const getIcon = (type: string) => {
     switch(type) {

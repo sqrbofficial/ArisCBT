@@ -1,22 +1,20 @@
 'use client';
 
 import ChatInterface from "@/components/chat-interface";
-import { useUser } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import AppShell from "@/components/layout/app-shell";
 
 export default function ChatSessionPage() {
-  // All hooks are called unconditionally at the top.
   const { user, isUserLoading } = useUser();
   const params = useParams();
-  
-  // Logic is performed after hooks.
-  const chatId = params.chatId as string;
-  const isLoading = isUserLoading || !user || !chatId;
+  const firestore = useFirestore();
 
-  // Conditional rendering happens only in the return statement.
+  const chatId = params.chatId as string;
+  const isLoading = isUserLoading || !chatId;
+
   return (
     <AppShell>
       {isLoading ? (
@@ -31,7 +29,8 @@ export default function ChatSessionPage() {
                   <MoreVertical />
               </Button>
           </header>
-          <ChatInterface chatId={chatId} />
+          {/* We ensure ChatInterface only renders when both user and chatId are available */}
+          {user && chatId && <ChatInterface chatId={chatId} />}
         </div>
       )}
     </AppShell>

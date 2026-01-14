@@ -51,28 +51,24 @@ type ChatGroupProps = {
 }
 
 export default function ChatHistoryPage() {
-  // All hooks are called unconditionally at the top of the component.
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const chatsCollectionRef = useMemoFirebase(
-    () => (user ? collection(firestore, 'users', user.uid, 'chats') : null),
-    [user, firestore]
-  );
-
+  // This query will now use a dummy UID if the user is not yet available,
+  // but the hook will not execute thanks to the `enabled` flag.
   const chatsQuery = useMemoFirebase(
-    () => (chatsCollectionRef ? query(chatsCollectionRef, orderBy('createdAt', 'desc')) : null),
-    [chatsCollectionRef]
+    () => query(collection(firestore, 'users', user?.uid || '__dummy__', 'chats'), orderBy('createdAt', 'desc')),
+    [firestore, user?.uid]
   );
   
-  const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery);
+  const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery, { enabled: !!user });
 
-  // Logic and event handlers are defined after all hooks.
   const handleCreateNewChat = () => {
+    if (!user) return;
+    const chatsCollectionRef = collection(firestore, 'users', user.uid, 'chats');
     startTransition(async () => {
-        if (!chatsCollectionRef) return;
         const newChatDoc = await addDoc(chatsCollectionRef, {
             title: 'New Chat',
             createdAt: serverTimestamp(),
@@ -87,7 +83,7 @@ export default function ChatHistoryPage() {
     await deleteDoc(chatDocRef);
   };
   
-  const isLoading = isUserLoading || areChatsLoading;
+  const isLoading = isUserLoading || (!!user && areChatsLoading);
 
   const now = new Date();
   const todayChats = chats?.filter(chat => isToday(new Date(chat.createdAt.seconds * 1000))) ?? [];
@@ -100,7 +96,6 @@ export default function ChatHistoryPage() {
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
 
-  // Conditional rendering only happens inside the return statement.
   return (
     <AppShell>
         {isLoading ? (
@@ -122,7 +117,7 @@ export default function ChatHistoryPage() {
                         <Button 
                             className="w-full h-14 rounded-xl text-lg font-semibold bg-primary hover:bg-primary/90"
                             onClick={handleCreateNewChat}
-                            disabled={isPending}
+                            disabled={isPending || !user}
                         >
                             {isPending ? 'Creating...' : 'Create New Chats'}
                         </Button>
