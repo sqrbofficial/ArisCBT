@@ -37,7 +37,7 @@ export interface UseDocResult<T> {
  * @returns {UseDocResult<T>} Object with data, isLoading, error.
  */
 export function useDoc<T = any>(
-  memoizedDocRef: DocumentReference<DocumentData> | null | undefined,
+  docRef: DocumentReference<DocumentData> | null | undefined,
   options?: { enabled?: boolean }
 ): UseDocResult<T> {
   const { enabled = true } = options || {};
@@ -48,8 +48,7 @@ export function useDoc<T = any>(
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-    // Do not run if the hook is disabled or the reference is not ready.
-    if (!enabled || !memoizedDocRef) {
+    if (!enabled || !docRef) {
       setData(null);
       setIsLoading(false);
       setError(null);
@@ -60,7 +59,7 @@ export function useDoc<T = any>(
     setError(null);
 
     const unsubscribe = onSnapshot(
-      memoizedDocRef,
+      docRef,
       (snapshot: DocumentSnapshot<DocumentData>) => {
         if (snapshot.exists()) {
           setData({ ...(snapshot.data() as T), id: snapshot.id });
@@ -73,7 +72,7 @@ export function useDoc<T = any>(
       (error: FirestoreError) => {
         const contextualError = new FirestorePermissionError({
           operation: 'get',
-          path: memoizedDocRef.path,
+          path: docRef.path,
         })
 
         setError(contextualError);
@@ -84,7 +83,7 @@ export function useDoc<T = any>(
     );
 
     return () => unsubscribe();
-  }, [memoizedDocRef, enabled]); // Re-run if the reference or enabled state changes.
+  }, [docRef, enabled]);
 
   return { data, isLoading, error };
 }
