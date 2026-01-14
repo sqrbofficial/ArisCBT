@@ -25,7 +25,7 @@ type ChatSession = {
 };
 
 export default function ChatHistoryPage() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -40,7 +40,7 @@ export default function ChatHistoryPage() {
     [chatsCollectionRef]
   );
   
-  const { data: chats, isLoading } = useCollection<ChatSession>(chatsQuery);
+  const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery);
 
   const handleCreateNewChat = () => {
     startTransition(async () => {
@@ -68,6 +68,8 @@ export default function ChatHistoryPage() {
       const chatDate = new Date(chat.createdAt.seconds * 1000);
       return !isToday(chatDate) && !isWithinInterval(chatDate, { start: subDays(now, 7), end: now });
   }) ?? [];
+
+  const isLoading = isUserLoading || areChatsLoading;
 
   if (isLoading || !user) {
     return (
@@ -106,7 +108,7 @@ export default function ChatHistoryPage() {
                         <Link href="#" className="text-sm font-medium hover:underline">See More</Link>
                     </div>
 
-                    {isLoading ? (
+                    {areChatsLoading ? (
                         <div className="text-center p-4">Loading chats...</div>
                     ) : (
                         <div className="space-y-6">
