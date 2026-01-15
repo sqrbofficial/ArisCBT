@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { isToday, isWithinInterval, subDays } from 'date-fns';
 import AppShell from '@/components/layout/app-shell';
 import type { User } from 'firebase/auth';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 type ChatSession = {
   id: string;
@@ -55,7 +56,7 @@ function ChatHistoryClientPage({ user }: { user: User }) {
 
   const chatsQuery = useMemoFirebase(
     () => query(collection(firestore, 'users', user.uid, 'chats'), orderBy('createdAt', 'desc')),
-    [firestore, user]
+    [firestore, user.uid] // Dependency on user.uid is stable
   );
   
   const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery);
@@ -91,7 +92,10 @@ function ChatHistoryClientPage({ user }: { user: User }) {
     <AppShell>
       <div className="flex h-full flex-col bg-app-gradient-dark dark:bg-app-gradient-dark text-white">
         <header className="flex items-center justify-between p-4 flex-shrink-0">
-          <h1 className="text-xl font-bold">ArisCBT</h1>
+          <div className="flex items-center gap-4">
+            <SidebarTrigger className="md:hidden" />
+            <h1 className="text-xl font-bold">ArisCBT</h1>
+          </div>
           <Button variant="ghost" size="icon">
             <MoreVertical />
           </Button>
