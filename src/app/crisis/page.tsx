@@ -13,7 +13,7 @@ import { Phone, MessageSquare, Search, Siren, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { hotlines, HotlineResource } from '@/lib/hotlines';
+import { hotlines } from '@/lib/hotlines';
 import { useMemo } from 'react';
 import AppShell from '@/components/layout/app-shell';
 import { SidebarTrigger } from '@/components/ui/sidebar';

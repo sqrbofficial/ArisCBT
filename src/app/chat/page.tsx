@@ -56,10 +56,10 @@ function ChatHistoryClientPage({ user }: { user: User }) {
 
   const chatsQuery = useMemoFirebase(
     () => query(collection(firestore, 'users', user.uid, 'chats'), orderBy('createdAt', 'desc')),
-    [firestore, user.uid] // Dependency on user.uid is stable
+    [firestore, user.uid]
   );
   
-  const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery);
+  const { data: chats, isLoading: areChatsLoading } = useCollection<ChatSession>(chatsQuery, { enabled: !!user });
 
   const handleCreateNewChat = () => {
     const chatsCollectionRef = collection(firestore, 'users', user.uid, 'chats');

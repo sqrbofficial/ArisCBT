@@ -11,9 +11,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 export default function ChatSessionPage() {
   const { user, isUserLoading } = useUser();
   const params = useParams();
-
   const chatId = params.chatId as string;
-  const isLoading = isUserLoading || !chatId || !user;
+  const isLoading = isUserLoading || !user || !chatId;
 
   return (
     <AppShell>

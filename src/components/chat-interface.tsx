@@ -39,15 +39,12 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
 
   const messagesQuery = useMemoFirebase(
     () => {
-      // This query now depends on user and chatId, but will only be executed by the hook when enabled.
-      // A dummy path is used if data is missing to prevent crashes.
       const path = user ? `users/${user.uid}/chats/${chatId}/messages` : 'dummy_path';
       return query(collection(firestore, path), orderBy("createdAt", "asc"));
     },
     [user, firestore, chatId]
   );
   
-  // The hook is now controlled by the `enabled` flag.
   const { data: fetchedMessages, isLoading: isLoadingMessages } = useCollection<Message>(messagesQuery, { enabled: !!user && !!chatId });
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const [isPending, startTransition] = useTransition();
